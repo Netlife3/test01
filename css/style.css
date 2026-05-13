@@ -744,6 +744,123 @@ ul { list-style: none; }
     50% { transform: scale(1.2); }
 }
 
+/* ==================== 密码弹窗 ==================== */
+.pwd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1003;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.pwd-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.pwd-modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px 36px 32px;
+    width: 380px;
+    max-width: 90vw;
+    text-align: center;
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+}
+
+.pwd-overlay.active .pwd-modal {
+    transform: scale(1) translateY(0);
+}
+
+.pwd-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(108,92,231,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--accent-light);
+}
+
+.pwd-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.pwd-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.pwd-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.pwd-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    text-align: center;
+    transition: var(--transition);
+    outline: none;
+    letter-spacing: 2px;
+}
+
+.pwd-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.15);
+}
+
+.pwd-input::placeholder {
+    letter-spacing: normal;
+    font-size: 0.9rem;
+}
+
+.pwd-error {
+    font-size: 0.85rem;
+    color: #f5576c;
+    margin-top: 10px;
+    min-height: 1.4em;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.pwd-error.show {
+    opacity: 1;
+}
+
+.pwd-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.pwd-actions .btn {
+    flex: 1;
+    text-align: center;
+}
+
 /* ==================== 编辑面板 ==================== */
 .edit-toggle {
     position: fixed;

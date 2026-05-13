@@ -479,15 +479,46 @@ function closePanel() {
     document.body.style.overflow = '';
 }
 
-editToggle.addEventListener('click', function () {
+/* ---- 密码弹窗 ---- */
+const pwdOverlay = document.getElementById('pwdOverlay');
+const pwdModal = document.getElementById('pwdModal');
+const pwdInput = document.getElementById('pwdInput');
+const pwdError = document.getElementById('pwdError');
+const pwdConfirm = document.getElementById('pwdConfirm');
+const pwdCancel = document.getElementById('pwdCancel');
+
+function closePwdModal() {
+    pwdOverlay.classList.remove('active');
+    pwdError.classList.remove('show');
+}
+
+function handlePwdSubmit() {
     const savedPwd = localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
-    const input = prompt('请输入编辑密码：');
-    if (input === null) return;
+    const input = pwdInput.value;
     if (input === savedPwd) {
+        closePwdModal();
         openPanel();
     } else {
-        showToast('密码错误');
+        pwdError.classList.add('show');
+        pwdInput.value = '';
+        pwdInput.focus();
     }
+}
+
+editToggle.addEventListener('click', function () {
+    pwdInput.value = '';
+    pwdError.classList.remove('show');
+    pwdOverlay.classList.add('active');
+    setTimeout(() => pwdInput.focus(), 100);
+});
+pwdConfirm.addEventListener('click', handlePwdSubmit);
+pwdCancel.addEventListener('click', closePwdModal);
+pwdOverlay.addEventListener('click', function (e) {
+    if (e.target === pwdOverlay) closePwdModal();
+});
+pwdInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handlePwdSubmit();
+    if (e.key === 'Escape') closePwdModal();
 });
 editClose.addEventListener('click', closePanel);
 editOverlay.addEventListener('click', closePanel);
