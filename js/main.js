@@ -86,6 +86,7 @@ function deepMerge(target, source) {
 let currentData = loadData();
 
 function renderAll() {
+    document.title = currentData.name + ' | 个人主页';
     renderLogo();
     renderHero();
     renderAbout();
