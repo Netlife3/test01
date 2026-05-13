@@ -4,6 +4,8 @@
    数据管理
    ============================================================ */
 const STORAGE_KEY = 'personal_site_data';
+const PASSWORD_KEY = 'personal_site_pwd';
+const DEFAULT_PASSWORD = 'admin123';
 
 const DEFAULT_DATA = {
     name: 'John Doe',
@@ -477,7 +479,16 @@ function closePanel() {
     document.body.style.overflow = '';
 }
 
-editToggle.addEventListener('click', openPanel);
+editToggle.addEventListener('click', function () {
+    const savedPwd = localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
+    const input = prompt('请输入编辑密码：');
+    if (input === null) return;
+    if (input === savedPwd) {
+        openPanel();
+    } else {
+        showToast('密码错误');
+    }
+});
 editClose.addEventListener('click', closePanel);
 editOverlay.addEventListener('click', closePanel);
 
@@ -492,6 +503,7 @@ function populateForm() {
     document.getElementById('editStats').value = d.stats.join(', ');
     document.getElementById('editStatsLabels').value = d.statLabels.join(', ');
     document.getElementById('editEmail').value = d.email;
+    document.getElementById('editPassword').value = '';
     document.getElementById('editSocialGithub').value = d.social.github || '';
     document.getElementById('editSocialWeibo').value = d.social.weibo || '';
     document.getElementById('editSocialZhihu').value = d.social.zhihu || '';
@@ -640,6 +652,12 @@ editSave.addEventListener('click', () => {
         if (title) data.projects.push({ title, desc, tags, color1, color2, cover });
     });
 
+    // save password if set
+    const pwd = document.getElementById('editPassword').value.trim();
+    if (pwd) {
+        localStorage.setItem(PASSWORD_KEY, pwd);
+    }
+
     currentData = data;
     saveData(data);
     renderAll();
@@ -650,6 +668,7 @@ editSave.addEventListener('click', () => {
 editReset.addEventListener('click', () => {
     if (confirm('确定恢复默认设置？当前所有自定义内容将丢失。')) {
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(PASSWORD_KEY);
         currentData = cloneData(DEFAULT_DATA);
         renderAll();
         populateForm();
@@ -660,8 +679,3 @@ editReset.addEventListener('click', () => {
    初始化
    ============================================================ */
 renderAll();
-
-// 编辑模式：仅当 URL 带 ?edit=true 时显示编辑按钮
-if (new URLSearchParams(window.location.search).has('edit')) {
-    document.getElementById('editToggle').style.display = 'flex';
-}
