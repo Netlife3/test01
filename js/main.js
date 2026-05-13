@@ -14,6 +14,7 @@ const DEFAULT_DATA = {
     bio: '一名热爱创造的全栈开发者。我相信代码不仅是工具，更是表达思想和实现价值的语言。',
     avatar: '',
     aboutPhoto: '',
+    siteSuffix: '个人主页',
     about: [
         '我是一名充满热情的全栈开发者，拥有 <strong>5 年</strong> 的 Web 开发经验。从像素级的前端界面到高并发后端服务，我享受构建完整产品的每一个环节。',
         '我相信技术是表达个人创造力的最佳媒介。每个项目都是一次独特的探索——用代码将想法转化为现实，用设计让体验更有温度。',
@@ -88,7 +89,7 @@ function deepMerge(target, source) {
 let currentData = loadData();
 
 function renderAll() {
-    document.title = currentData.name + ' | 个人主页';
+    document.title = currentData.name + (currentData.siteSuffix ? ' | ' + currentData.siteSuffix : '');
     renderLogo();
     renderFooter();
     renderHero();
@@ -527,6 +528,7 @@ editOverlay.addEventListener('click', closePanel);
 function populateForm() {
     const d = currentData;
     document.getElementById('editName').value = d.name;
+    document.getElementById('editSiteSuffix').value = d.siteSuffix || '';
     document.getElementById('editGreeting').value = d.greeting;
     document.getElementById('editTitles').value = d.titles.join(', ');
     document.getElementById('editBio').value = d.bio;
@@ -647,6 +649,7 @@ document.getElementById('editAboutPhoto').addEventListener('change', function (e
 editSave.addEventListener('click', () => {
     const data = {
         name: document.getElementById('editName').value.trim() || 'John Doe',
+        siteSuffix: document.getElementById('editSiteSuffix').value.trim(),
         greeting: document.getElementById('editGreeting').value.trim() || '你好，我是',
         titles: document.getElementById('editTitles').value.split(',').map(s => s.trim()).filter(Boolean),
         bio: document.getElementById('editBio').value.trim(),
