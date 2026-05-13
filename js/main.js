@@ -88,6 +88,7 @@ let currentData = loadData();
 function renderAll() {
     document.title = currentData.name + ' | 个人主页';
     renderLogo();
+    renderFooter();
     renderHero();
     renderAbout();
     renderSkills();
@@ -102,6 +103,10 @@ function renderLogo() {
     const name = currentData.name.trim();
     const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'JD';
     logo.textContent = '<' + initials + ' />';
+}
+
+function renderFooter() {
+    document.getElementById('footerName').textContent = currentData.name;
 }
 
 function renderHero() {
