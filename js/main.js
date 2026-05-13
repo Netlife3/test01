@@ -709,6 +709,50 @@ editReset.addEventListener('click', () => {
     }
 });
 
+/* ---- 导出/导入数据 ---- */
+document.getElementById('exportData').addEventListener('click', function () {
+    const data = currentData;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'portfolio-data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('数据已导出');
+});
+
+document.getElementById('importData').addEventListener('click', function () {
+    document.getElementById('importFileInput').click();
+});
+
+document.getElementById('importFileInput').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+        try {
+            const imported = JSON.parse(ev.target.result);
+            // validate basic structure
+            if (!imported.name && !imported.titles) {
+                throw new Error('无效的数据格式');
+            }
+            currentData = deepMerge(cloneData(DEFAULT_DATA), imported);
+            saveData(currentData);
+            renderAll();
+            populateForm();
+            showToast('数据导入成功');
+        } catch (err) {
+            showToast('导入失败：文件格式不正确');
+        }
+    };
+    reader.readAsText(file);
+    // reset so same file can be imported again
+    this.value = '';
+});
+
 /* ============================================================
    动态粒子背景
    ============================================================ */

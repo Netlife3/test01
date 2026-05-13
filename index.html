@@ -371,6 +371,17 @@
                     <input type="url" id="editSocialTwitter" placeholder="https://twitter.com/你的用户名">
                 </div>
             </section>
+            <section class="edit-section">
+                <h4>📦 数据迁移</h4>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
+                    在不同域名部署后，通过导出/导入迁移你的编辑数据（localStorage 是按域名隔离的）。
+                </p>
+                <div class="data-migrate-actions">
+                    <button class="btn btn-outline" id="exportData">导出数据</button>
+                    <button class="btn btn-outline" id="importData">导入数据</button>
+                    <input type="file" id="importFileInput" accept=".json" style="display:none">
+                </div>
+            </section>
         </div>
         <div class="edit-panel-footer">
             <button class="btn btn-primary" id="editSave">保存</button>
