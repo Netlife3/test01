@@ -219,6 +219,74 @@ function renderAbout() {
             <span>你的照片</span>
         `;
     }
+    // async Pretext magazine enhancement (desktop only)
+    enhanceAboutMagazine();
+}
+
+/* ---- Pretext 杂志式双栏排版 ---- */
+async function enhanceAboutMagazine() {
+    const aboutGrid = document.querySelector('.about-grid');
+    if (!aboutGrid || window.innerWidth < 968) return;
+    // remove previous magazine layout if any
+    const existing = aboutGrid.querySelector('.about-magazine');
+    if (existing) existing.remove();
+    // restore original layout
+    const origText = aboutGrid.querySelector('.about-text');
+    const origPhoto = aboutGrid.querySelector('.about-photo');
+    if (origText) origText.style.display = '';
+    if (origPhoto) origPhoto.style.display = '';
+
+    try {
+        const pretext = await import('https://unpkg.com/@chenglou/pretext/dist/layout.js');
+
+        const d = currentData;
+        const fullText = d.about.map(p => p.replace(/<[^>]*>/g, '')).join(' ');
+        if (!fullText || fullText.length < 20) return;
+
+        const font = '16px Inter';
+        const lh = 28.8;
+
+        // measure available width (container minus photo)
+        const aboutTextEl = aboutGrid.querySelector('.about-text');
+        const origDisplay = aboutTextEl.style.display;
+        aboutTextEl.style.display = 'none'; // hide to measure available space
+        const availW = aboutGrid.offsetWidth - 60;
+        aboutTextEl.style.display = origDisplay;
+        const colW = Math.floor((availW - 40) / 2);
+        if (colW < 200) return;
+
+        const prepared = pretext.prepare(fullText, font);
+        const { lines } = pretext.layoutWithLines(prepared, colW, lh);
+        if (!lines || lines.length < 3) return;
+
+        // split into 2 balanced columns
+        const half = Math.ceil(lines.length / 2);
+        const col1Lines = lines.slice(0, half);
+        const col2Lines = lines.slice(half);
+
+        // build columns as HTML
+        function linesToHtml(lineArr, dropCap) {
+            const text = lineArr.map(l => l.text).join(' ');
+            if (dropCap && text.length > 1) {
+                return `<p><span class="drop-cap">${text.charAt(0)}</span>${text.slice(1)}</p>`;
+            }
+            return `<p>${text}</p>`;
+        }
+
+        const magDiv = document.createElement('div');
+        magDiv.className = 'about-magazine';
+        magDiv.innerHTML = `
+            <div class="about-magazine-col">${linesToHtml(col1Lines, true)}</div>
+            <div class="about-magazine-col">${linesToHtml(col2Lines, false)}</div>
+        `;
+
+        // hide original text, insert magazine layout before photo
+        aboutTextEl.style.display = 'none';
+        const photoEl = aboutGrid.querySelector('.about-photo');
+        aboutGrid.insertBefore(magDiv, photoEl);
+    } catch (e) {
+        // Pretext unavailable — keep original layout
+    }
 }
 
 function renderSkills() {

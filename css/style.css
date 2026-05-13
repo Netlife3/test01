@@ -487,6 +487,33 @@ ul { list-style: none; }
     color: var(--accent-light);
 }
 
+/* ==================== Pretext 杂志式排版 ==================== */
+.about-magazine {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.about-magazine-col p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin: 0;
+    text-align: left;
+}
+
+.drop-cap {
+    float: left;
+    font-size: 3.8em;
+    line-height: 0.75;
+    padding-right: 8px;
+    font-weight: 800;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
 .about-stats {
     display: flex;
     gap: 48px;
