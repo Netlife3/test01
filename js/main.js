@@ -30,7 +30,13 @@ const DEFAULT_DATA = {
         { title: '全栈电商平台', desc: '完整的电商解决方案，包含商品管理、购物车、订单系统和在线支付。', tags: ['Next.js', 'Node.js', 'Stripe'], color1: '#f093fb', color2: '#f5576c' },
         { title: '云原生监控平台', desc: '实时的服务器监控与告警系统，支持自定义仪表盘和多维度数据分析。', tags: ['Go', 'Prometheus', 'Docker'], color1: '#4facfe', color2: '#00f2fe' }
     ],
-    email: 'hello@johndoe.com'
+    email: 'hello@johndoe.com',
+    social: {
+        github: '',
+        weibo: '',
+        zhihu: '',
+        twitter: ''
+    }
 };
 
 function loadData() {
@@ -197,9 +203,24 @@ function renderProjects() {
 }
 
 function renderContact() {
+    const d = currentData;
+    // email
     const emailEl = document.querySelector('.contact-email');
-    emailEl.textContent = currentData.email;
-    emailEl.href = 'mailto:' + currentData.email;
+    emailEl.textContent = d.email;
+    emailEl.href = 'mailto:' + d.email;
+
+    // hero social + contact social links
+    const emailIcon = document.querySelector('[data-social="email"]');
+    if (emailIcon) emailIcon.href = 'mailto:' + d.email;
+
+    const platforms = ['github', 'weibo', 'zhihu', 'twitter'];
+    platforms.forEach(p => {
+        const url = d.social[p] || '';
+        document.querySelectorAll(`[data-social="${p}"]`).forEach(el => {
+            el.href = url || '#';
+            el.style.display = url ? '' : 'none';
+        });
+    });
 }
 
 function escapeHtml(str) {
@@ -397,6 +418,10 @@ function populateForm() {
     document.getElementById('editStats').value = d.stats.join(', ');
     document.getElementById('editStatsLabels').value = d.statLabels.join(', ');
     document.getElementById('editEmail').value = d.email;
+    document.getElementById('editSocialGithub').value = d.social.github || '';
+    document.getElementById('editSocialWeibo').value = d.social.weibo || '';
+    document.getElementById('editSocialZhihu').value = d.social.zhihu || '';
+    document.getElementById('editSocialTwitter').value = d.social.twitter || '';
 
     // avatar preview
     const preview = document.getElementById('avatarPreview');
@@ -496,7 +521,13 @@ editSave.addEventListener('click', () => {
         statLabels: document.getElementById('editStatsLabels').value.split(',').map(s => s.trim()).filter(Boolean),
         skills: [],
         projects: [],
-        email: document.getElementById('editEmail').value.trim()
+        email: document.getElementById('editEmail').value.trim(),
+        social: {
+            github: document.getElementById('editSocialGithub').value.trim(),
+            weibo: document.getElementById('editSocialWeibo').value.trim(),
+            zhihu: document.getElementById('editSocialZhihu').value.trim(),
+            twitter: document.getElementById('editSocialTwitter').value.trim()
+        }
     };
 
     document.querySelectorAll('#editSkillsContainer .edit-skill-item').forEach(item => {
