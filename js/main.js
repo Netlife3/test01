@@ -205,14 +205,22 @@ function renderProjects() {
 
 function renderContact() {
     const d = currentData;
-    // email
+    // email — click to copy
     const emailEl = document.querySelector('.contact-email');
     emailEl.textContent = d.email;
-    emailEl.href = 'mailto:' + d.email;
+    emailEl.onclick = function (e) {
+        e.preventDefault();
+        copyToClipboard(d.email);
+    };
 
     // hero email icon
     const emailIcon = document.querySelector('[data-social="email"]');
-    if (emailIcon) emailIcon.href = 'mailto:' + d.email;
+    if (emailIcon) {
+        emailIcon.onclick = function (e) {
+            e.preventDefault();
+            copyToClipboard(d.email);
+        };
+    }
 
     // social platforms
     const platforms = ['github', 'weibo', 'zhihu', 'twitter'];
@@ -237,6 +245,50 @@ function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+}
+
+/* ============================================================
+   剪贴板 + Toast 提示
+   ============================================================ */
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast('已复制邮箱：' + text));
+    } else {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('已复制邮箱：' + text);
+    }
+}
+
+function showToast(msg) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = `
+            position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
+            background:var(--accent-gradient); color:#fff;
+            padding:14px 28px; border-radius:50px; font-size:0.9rem; font-weight:600;
+            z-index:9999; opacity:0; transition:opacity 0.3s ease, transform 0.3s ease;
+            pointer-events:none; white-space:nowrap;
+        `;
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(10px)';
+    }, 2500);
 }
 
 /* ============================================================
