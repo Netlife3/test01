@@ -11,6 +11,7 @@ const DEFAULT_DATA = {
     titles: ['全栈开发者', 'UI/UX 设计师', '开源爱好者', '终身学习者'],
     bio: '一名热爱创造的全栈开发者。我相信代码不仅是工具，更是表达思想和实现价值的语言。',
     avatar: '',
+    aboutPhoto: '',
     about: [
         '我是一名充满热情的全栈开发者，拥有 <strong>5 年</strong> 的 Web 开发经验。从像素级的前端界面到高并发后端服务，我享受构建完整产品的每一个环节。',
         '我相信技术是表达个人创造力的最佳媒介。每个项目都是一次独特的探索——用代码将想法转化为现实，用设计让体验更有温度。',
@@ -145,6 +146,17 @@ function renderAbout() {
             statLabels[i].textContent = d.statLabels[i] || '';
         }
     });
+
+    // about photo
+    const photoEl = document.querySelector('.photo-placeholder');
+    if (d.aboutPhoto) {
+        photoEl.innerHTML = `<img src="${d.aboutPhoto}" alt="about photo" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+        photoEl.innerHTML = `
+            <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 20c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 45c-16.6 0-30 6.7-30 15v5h60v-5c0-8.3-13.4-15-30-15z"/></svg>
+            <span>你的照片</span>
+        `;
+    }
 }
 
 function renderSkills() {
@@ -394,6 +406,14 @@ function populateForm() {
         preview.innerHTML = '<span>点击上传图片</span>';
     }
 
+    // about photo preview
+    const aboutPreview = document.getElementById('aboutPhotoPreview');
+    if (d.aboutPhoto) {
+        aboutPreview.innerHTML = `<img src="${d.aboutPhoto}" alt="">`;
+    } else {
+        aboutPreview.innerHTML = '<span>点击上传</span>';
+    }
+
     // skills
     const skillsContainer = document.getElementById('editSkillsContainer');
     skillsContainer.innerHTML = '';
@@ -450,6 +470,18 @@ document.getElementById('editAvatar').addEventListener('change', function (e) {
     reader.readAsDataURL(file);
 });
 
+/* ---- 关于照片上传 ---- */
+document.getElementById('editAboutPhoto').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+        const preview = document.getElementById('aboutPhotoPreview');
+        preview.innerHTML = `<img src="${ev.target.result}" alt="">`;
+    };
+    reader.readAsDataURL(file);
+});
+
 /* ---- 保存 ---- */
 editSave.addEventListener('click', () => {
     const data = {
@@ -458,6 +490,7 @@ editSave.addEventListener('click', () => {
         titles: document.getElementById('editTitles').value.split(',').map(s => s.trim()).filter(Boolean),
         bio: document.getElementById('editBio').value.trim(),
         avatar: document.getElementById('avatarPreview').querySelector('img')?.src || '',
+        aboutPhoto: document.getElementById('aboutPhotoPreview').querySelector('img')?.src || '',
         about: document.getElementById('editAbout').value.split('\n').map(s => s.trim()).filter(Boolean),
         stats: document.getElementById('editStats').value.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)),
         statLabels: document.getElementById('editStatsLabels').value.split(',').map(s => s.trim()).filter(Boolean),
