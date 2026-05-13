@@ -210,16 +210,25 @@ function renderContact() {
     emailEl.textContent = d.email;
     emailEl.href = 'mailto:' + d.email;
 
-    // hero social + contact social links
+    // hero email icon
     const emailIcon = document.querySelector('[data-social="email"]');
     if (emailIcon) emailIcon.href = 'mailto:' + d.email;
 
+    // social platforms
     const platforms = ['github', 'weibo', 'zhihu', 'twitter'];
     platforms.forEach(p => {
-        const url = d.social[p] || '';
+        let url = (d.social[p] || '').trim();
+        // auto-prefix https:// if missing
+        if (url && !/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+        }
         document.querySelectorAll(`[data-social="${p}"]`).forEach(el => {
             el.href = url || '#';
             el.style.display = url ? '' : 'none';
+            if (url) {
+                el.target = '_blank';
+                el.rel = 'noopener noreferrer';
+            }
         });
     });
 }
