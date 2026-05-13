@@ -222,6 +222,111 @@
         </div>
     </footer>
 
+    <!-- ======== 编辑按钮 ======== -->
+    <button class="edit-toggle" id="editToggle" aria-label="编辑模式">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+    </button>
+
+    <!-- ======== 编辑面板 ======== -->
+    <div class="edit-panel" id="editPanel">
+        <div class="edit-panel-header">
+            <h3>编辑主页</h3>
+            <button class="edit-close" id="editClose">&times;</button>
+        </div>
+        <div class="edit-panel-body" id="editPanelBody">
+
+            <!-- Hero -->
+            <section class="edit-section">
+                <h4>👤 个人信息</h4>
+                <div class="edit-field">
+                    <label>名字</label>
+                    <input type="text" id="editName" placeholder="John Doe">
+                </div>
+                <div class="edit-field">
+                    <label>问候语</label>
+                    <input type="text" id="editGreeting" placeholder="你好，我是">
+                </div>
+                <div class="edit-field">
+                    <label>标题词（逗号分隔）</label>
+                    <input type="text" id="editTitles" placeholder="全栈开发者, UI/UX 设计师, ...">
+                </div>
+                <div class="edit-field">
+                    <label>个人简介</label>
+                    <textarea id="editBio" rows="3" placeholder="一段介绍文字"></textarea>
+                </div>
+                <div class="edit-field">
+                    <label>头像</label>
+                    <div class="edit-avatar-upload">
+                        <input type="file" id="editAvatar" accept="image/*">
+                        <div class="edit-avatar-preview" id="avatarPreview">
+                            <span>点击上传图片</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About -->
+            <section class="edit-section">
+                <h4>📝 关于我</h4>
+                <div class="edit-field">
+                    <label>介绍段落（每行一段）</label>
+                    <textarea id="editAbout" rows="4" placeholder="每行一段"></textarea>
+                </div>
+                <div class="edit-field">
+                    <label>统计数字（逗号分隔）</label>
+                    <input type="text" id="editStats" placeholder="50, 30, 5">
+                </div>
+                <div class="edit-field">
+                    <label>统计标签（逗号分隔）</label>
+                    <input type="text" id="editStatsLabels" placeholder="完成项目, 合作客户, 年经验">
+                </div>
+            </section>
+
+            <!-- Skills -->
+            <section class="edit-section">
+                <h4>💡 技能</h4>
+                <div id="editSkillsContainer">
+                    <div class="edit-skill-item">
+                        <input class="skill-name" placeholder="分类名称（如：前端开发）">
+                        <input class="skill-tags" placeholder="标签（逗号分隔，如：React, Vue, TS）">
+                        <button class="edit-remove-btn" title="删除">×</button>
+                    </div>
+                </div>
+                <button class="edit-add-btn" id="addSkill">+ 添加技能组</button>
+            </section>
+
+            <!-- Projects -->
+            <section class="edit-section">
+                <h4>🚀 项目</h4>
+                <div id="editProjectsContainer">
+                    <div class="edit-project-item">
+                        <input class="proj-title" placeholder="项目名称">
+                        <input class="proj-desc" placeholder="项目简介">
+                        <input class="proj-tags" placeholder="标签（逗号分隔）">
+                        <input class="proj-color1" placeholder="渐变颜色1（如 #667eea）">
+                        <input class="proj-color2" placeholder="渐变颜色2（如 #764ba2）">
+                        <button class="edit-remove-btn" title="删除">×</button>
+                    </div>
+                </div>
+                <button class="edit-add-btn" id="addProject">+ 添加项目</button>
+            </section>
+
+            <!-- Contact -->
+            <section class="edit-section">
+                <h4>📬 联系方式</h4>
+                <div class="edit-field">
+                    <label>邮箱</label>
+                    <input type="email" id="editEmail" placeholder="hello@example.com">
+                </div>
+            </section>
+        </div>
+        <div class="edit-panel-footer">
+            <button class="btn btn-primary" id="editSave">保存</button>
+            <button class="btn btn-outline" id="editReset">恢复默认</button>
+        </div>
+    </div>
+    <div class="edit-overlay" id="editOverlay"></div>
+
     <script src="js/main.js"></script>
 </body>
 </html>
