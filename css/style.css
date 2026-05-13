@@ -35,6 +35,22 @@ body {
     overflow-x: hidden;
 }
 
+/* ==================== 粒子背景 ==================== */
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#page-content {
+    position: relative;
+    z-index: 2;
+}
+
 a {
     color: inherit;
     text-decoration: none;

@@ -710,6 +710,125 @@ editReset.addEventListener('click', () => {
 });
 
 /* ============================================================
+   动态粒子背景
+   ============================================================ */
+(function () {
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let mouse = { x: -9999, y: -9999 };
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const COUNT = 100;
+    const CONNECT_DIST = 140;
+    const MOUSE_RADIUS = 200;
+
+    for (let i = 0; i < COUNT; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            r: Math.random() * 2 + 1
+        });
+    }
+
+    document.addEventListener('mousemove', function (e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    document.addEventListener('mouseleave', function () {
+        mouse.x = -9999;
+        mouse.y = -9999;
+    });
+    // touch support for mobile
+    document.addEventListener('touchmove', function (e) {
+        const t = e.touches[0];
+        mouse.x = t.clientX;
+        mouse.y = t.clientY;
+    });
+    document.addEventListener('touchend', function () {
+        mouse.x = -9999;
+        mouse.y = -9999;
+    });
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const accent = getComputedStyle(document.documentElement)
+            .getPropertyValue('--accent').trim() || '#6c5ce7';
+        const accentRgb = hexToRgb(accent);
+
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+
+            // mouse repulsion
+            const dx = p.x - mouse.x;
+            const dy = p.y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MOUSE_RADIUS && dist > 0) {
+                const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS * 0.6;
+                p.vx += (dx / dist) * force;
+                p.vy += (dy / dist) * force;
+            }
+
+            // damping
+            p.vx *= 0.98;
+            p.vy *= 0.98;
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // wrap around edges
+            if (p.x < -10) p.x = canvas.width + 10;
+            if (p.x > canvas.width + 10) p.x = -10;
+            if (p.y < -10) p.y = canvas.height + 10;
+            if (p.y > canvas.height + 10) p.y = -10;
+
+            // draw particle
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${accentRgb}, 0.4)`;
+            ctx.fill();
+
+            // connections
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const cx = p.x - p2.x;
+                const cy = p.y - p2.y;
+                const cd = Math.sqrt(cx * cx + cy * cy);
+                if (cd < CONNECT_DIST) {
+                    const alpha = (1 - cd / CONNECT_DIST) * 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = `rgba(${accentRgb}, ${alpha})`;
+                    ctx.lineWidth = 0.6;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    function hexToRgb(hex) {
+        const val = hex.replace('#', '');
+        return parseInt(val.substring(0, 2), 16) + ',' +
+               parseInt(val.substring(2, 4), 16) + ',' +
+               parseInt(val.substring(4, 6), 16);
+    }
+
+    animate();
+})();
+
+/* ============================================================
    初始化
    ============================================================ */
 renderAll();
