@@ -79,6 +79,7 @@ function deepMerge(target, source) {
 let currentData = loadData();
 
 function renderAll() {
+    renderLogo();
     renderHero();
     renderAbout();
     renderSkills();
@@ -86,6 +87,13 @@ function renderAll() {
     renderContact();
     reobserveReveal();
     reobserveStats();
+}
+
+function renderLogo() {
+    const logo = document.getElementById('logo');
+    const name = currentData.name.trim();
+    const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'JD';
+    logo.textContent = '<' + initials + ' />';
 }
 
 function renderHero() {
