@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Doe | 个人主页</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#hero" class="logo">&lt;JD /&gt;</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about" class="nav-link">关于</a></li>
+                <li><a href="#skills" class="nav-link">技能</a></li>
+                <li><a href="#projects" class="nav-link">项目</a></li>
+                <li><a href="#contact" class="nav-link">联系</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section id="hero" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <p class="hero-greeting">你好，我是</p>
+                <h1 class="hero-name">John Doe</h1>
+                <h2 class="hero-title">
+                    <span class="typing-text" id="typingText"></span>
+                    <span class="cursor">|</span>
+                </h2>
+                <p class="hero-desc">
+                    一名热爱创造的全栈开发者。我相信代码不仅是工具，更是表达思想和实现价值的语言。
+                </p>
+                <div class="hero-actions">
+                    <a href="#projects" class="btn btn-primary">查看作品</a>
+                    <a href="#contact" class="btn btn-outline">联系我</a>
+                </div>
+                <div class="hero-social">
+                    <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
+                    <a href="#" aria-label="微博"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zm-1.2-9.595c-4.626.533-7.985 3.56-7.485 6.772.498 3.211 4.559 5.355 9.183 4.821 4.626-.533 7.985-3.56 7.485-6.772-.498-3.206-4.558-5.355-9.183-4.821zM4.566 12.36a.574.574 0 01-.482-.261c-.564-.906-.369-1.95.105-2.597.481-.663 1.175-.972 1.681-.756.502.215.482.992 0 1.757-.47.749-1.075 1.129-1.304 1.857zm14.599 4.526c1.101-3.755-1.826-7.542-5.98-7.913-1.178-.105-2.17.127-2.964.705-.358.262-.484.432-.347.586.155.174.469.22 1.003.231.834.017 1.566.143 2.27.44a5.575 5.575 0 012.6 2.367c.445.806.593 1.641.48 2.263-.072.401-.006.676.199.83.18.136.447.12.79-.066a3.111 3.111 0 001.541-1.895c.566-1.927-.02-4.078-1.505-5.596-1.519-1.55-3.681-2.29-5.845-2.072-1.649.166-3.185.884-4.341 2.055-1.139 1.157-1.33 2.653-.88 3.744.044.108.142.139.23.101.18-.079.55-.449.874-1.237.288-.7.897-1.328 1.623-1.697 1.302-.662 2.838-.458 3.881.548 1.034.998 1.414 2.595.922 4.108-.465 1.437-1.478 2.582-2.58 2.917-1.04.317-2.404-.046-3.443-.795-1.24-.892-1.735-2.153-1.553-3.254.005-.327.052-.649.137-.955.017-.076-.024-.194-.091-.229a.304.304 0 00-.245-.014c-.452.162-.877.582-1.23 1.058-.948 1.285-1.292 2.14-1.292 2.14s-.482 1.914 1.342 3.657c1.468 1.397 3.88 1.841 5.828 1.629 2.978-.323 5.208-2.299 5.822-4.538z"/></svg></a>
+                    <a href="#" aria-label="邮箱"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="avatar-box">
+                    <div class="avatar-placeholder">JD</div>
+                    <div class="deco-circle deco-1"></div>
+                    <div class="deco-circle deco-2"></div>
+                    <div class="deco-dots"></div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-hint" id="scrollHint">
+            <span>向下滚动</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- 关于我 -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">关于我</h2>
+            <p class="section-subtitle reveal">About Me</p>
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <p>我是一名充满热情的全栈开发者，拥有 <strong>5 年</strong> 的 Web 开发经验。从像素级的前端界面到高并发后端服务，我享受构建完整产品的每一个环节。</p>
+                    <p>我相信技术是表达个人创造力的最佳媒介。每个项目都是一次独特的探索——用代码将想法转化为现实，用设计让体验更有温度。</p>
+                    <p>工作之余，我喜欢开源贡献、技术写作，以及探索 AI 与 Web 技术的交叉领域。</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <span class="stat-num" data-target="50">0</span>
+                            <span class="stat-label">完成项目</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-num" data-target="30">0</span>
+                            <span class="stat-label">合作客户</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-num" data-target="5">0</span>
+                            <span class="stat-label">年经验</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-photo reveal">
+                    <div class="photo-frame">
+                        <div class="photo-placeholder">
+                            <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 20c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm0 45c-16.6 0-30 6.7-30 15v5h60v-5c0-8.3-13.4-15-30-15z"/></svg>
+                            <span>你的照片</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能 -->
+    <section id="skills" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title reveal">专业技能</h2>
+            <p class="section-subtitle reveal">Skills</p>
+            <div class="skills-grid">
+                <div class="skill-card reveal">
+                    <div class="skill-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+                    <h3>前端开发</h3>
+                    <div class="skill-tags">
+                        <span>React</span><span>Vue</span><span>TypeScript</span>
+                        <span>HTML5</span><span>CSS3</span><span>Tailwind</span>
+                    </div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+                    <h3>后端开发</h3>
+                    <div class="skill-tags">
+                        <span>Node.js</span><span>Python</span><span>Go</span>
+                        <span>PostgreSQL</span><span>MongoDB</span><span>Redis</span>
+                    </div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM9 8h2v8H9zm4 0h2v8h-2z"/></svg></div>
+                    <h3>UI/UX 设计</h3>
+                    <div class="skill-tags">
+                        <span>Figma</span><span>Sketch</span><span>设计系统</span>
+                        <span>交互设计</span><span>原型</span>
+                    </div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+                    <h3>DevOps</h3>
+                    <div class="skill-tags">
+                        <span>Docker</span><span>K8s</span><span>AWS</span>
+                        <span>CI/CD</span><span>Nginx</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目 -->
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">精选项目</h2>
+            <p class="section-subtitle reveal">Projects</p>
+            <div class="projects-grid">
+                <div class="project-card reveal">
+                    <div class="project-thumb" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <span class="project-thumb-text">AI Chat</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>AI 智能助手平台</h3>
+                        <p>基于大语言模型的对话平台，支持多轮对话、知识库管理和上下文记忆。</p>
+                        <div class="project-tags">
+                            <span>React</span><span>Python</span><span>LLM</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">查看详情 →</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card reveal">
+                    <div class="project-thumb" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        <span class="project-thumb-text">E-Commerce</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>全栈电商平台</h3>
+                        <p>完整的电商解决方案，包含商品管理、购物车、订单系统和在线支付。</p>
+                        <div class="project-tags">
+                            <span>Next.js</span><span>Node.js</span><span>Stripe</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">查看详情 →</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card reveal">
+                    <div class="project-thumb" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <span class="project-thumb-text">DevOps</span>
+                    </div>
+                    <div class="project-info">
+                        <h3>云原生监控平台</h3>
+                        <p>实时的服务器监控与告警系统，支持自定义仪表盘和多维度数据分析。</p>
+                        <div class="project-tags">
+                            <span>Go</span><span>Prometheus</span><span>Docker</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link">查看详情 →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系 -->
+    <section id="contact" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title reveal">联系我</h2>
+            <p class="section-subtitle reveal">Contact</p>
+            <div class="contact-content reveal">
+                <p class="contact-text">如果你有项目想法、合作意向，或者只是想打个招呼——我随时欢迎！</p>
+                <a href="mailto:hello@johndoe.com" class="contact-email">hello@johndoe.com</a>
+                <div class="contact-social">
+                    <a href="#" class="social-btn">GitHub</a>
+                    <a href="#" class="social-btn">微博</a>
+                    <a href="#" class="social-btn">知乎</a>
+                    <a href="#" class="social-btn">Twitter</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 John Doe. Made with <span class="heart">♥</span> by individuality.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
