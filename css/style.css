@@ -746,6 +746,7 @@ ul { list-style: none; }
 
 /* ==================== 编辑面板 ==================== */
 .edit-toggle {
+    display: none;
     position: fixed;
     bottom: 32px;
     right: 32px;

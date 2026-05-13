@@ -660,3 +660,8 @@ editReset.addEventListener('click', () => {
    初始化
    ============================================================ */
 renderAll();
+
+// 编辑模式：仅当 URL 带 ?edit=true 时显示编辑按钮
+if (new URLSearchParams(window.location.search).has('edit')) {
+    document.getElementById('editToggle').style.display = 'flex';
+}
