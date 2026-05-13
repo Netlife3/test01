@@ -26,9 +26,9 @@ const DEFAULT_DATA = {
         { name: 'DevOps', tags: ['Docker', 'K8s', 'AWS', 'CI/CD', 'Nginx'] }
     ],
     projects: [
-        { title: 'AI 智能助手平台', desc: '基于大语言模型的对话平台，支持多轮对话、知识库管理和上下文记忆。', tags: ['React', 'Python', 'LLM'], color1: '#667eea', color2: '#764ba2' },
-        { title: '全栈电商平台', desc: '完整的电商解决方案，包含商品管理、购物车、订单系统和在线支付。', tags: ['Next.js', 'Node.js', 'Stripe'], color1: '#f093fb', color2: '#f5576c' },
-        { title: '云原生监控平台', desc: '实时的服务器监控与告警系统，支持自定义仪表盘和多维度数据分析。', tags: ['Go', 'Prometheus', 'Docker'], color1: '#4facfe', color2: '#00f2fe' }
+        { title: 'AI 智能助手平台', desc: '基于大语言模型的对话平台，支持多轮对话、知识库管理和上下文记忆。', tags: ['React', 'Python', 'LLM'], color1: '#667eea', color2: '#764ba2', cover: '' },
+        { title: '全栈电商平台', desc: '完整的电商解决方案，包含商品管理、购物车、订单系统和在线支付。', tags: ['Next.js', 'Node.js', 'Stripe'], color1: '#f093fb', color2: '#f5576c', cover: '' },
+        { title: '云原生监控平台', desc: '实时的服务器监控与告警系统，支持自定义仪表盘和多维度数据分析。', tags: ['Go', 'Prometheus', 'Docker'], color1: '#4facfe', color2: '#00f2fe', cover: '' }
     ],
     email: 'hello@johndoe.com',
     social: {
@@ -193,9 +193,16 @@ function renderProjects() {
         const card = document.createElement('div');
         card.className = 'project-card reveal';
         const thumbText = proj.title.split(' ').map(w => w[0]).join('').slice(0, 6) || 'P';
+        const hasCover = !!proj.cover;
+        const thumbStyle = hasCover
+            ? 'background: transparent; padding: 0; overflow: hidden;'
+            : `background: linear-gradient(135deg, ${proj.color1 || '#667eea'}, ${proj.color2 || '#764ba2'});`;
+        const thumbContent = hasCover
+            ? `<img src="${proj.cover}" alt="${escapeHtml(proj.title)}" style="width:100%;height:100%;object-fit:cover;">`
+            : `<span class="project-thumb-text">${escapeHtml(thumbText)}</span>`;
         card.innerHTML = `
-            <div class="project-thumb" style="background: linear-gradient(135deg, ${proj.color1 || '#667eea'}, ${proj.color2 || '#764ba2'});">
-                <span class="project-thumb-text">${escapeHtml(thumbText)}</span>
+            <div class="project-thumb" style="${thumbStyle}">
+                ${thumbContent}
             </div>
             <div class="project-info">
                 <h3>${escapeHtml(proj.title)}</h3>
@@ -514,7 +521,7 @@ function populateForm() {
     // projects
     const projContainer = document.getElementById('editProjectsContainer');
     projContainer.innerHTML = '';
-    d.projects.forEach(p => addProjectItem(p.title, p.desc, p.tags.join(', '), p.color1, p.color2));
+    d.projects.forEach(p => addProjectItem(p.title, p.desc, p.tags.join(', '), p.color1, p.color2, p.cover || ''));
 }
 
 /* ---- 动态添加技能/项目 ---- */
@@ -531,24 +538,43 @@ function addSkillItem(name, tags) {
     container.appendChild(div);
 }
 
-function addProjectItem(title, desc, tags, c1, c2) {
+function addProjectItem(title, desc, tags, c1, c2, cover) {
     const container = document.getElementById('editProjectsContainer');
     const div = document.createElement('div');
     div.className = 'edit-project-item';
+    const coverPreviewHtml = cover
+        ? `<img src="${escapeHtml(cover)}" alt="">`
+        : '<span>上传封面</span>';
     div.innerHTML = `
         <input class="proj-title" placeholder="项目名称" value="${escapeHtml(title || '')}">
         <input class="proj-desc" placeholder="项目简介" value="${escapeHtml(desc || '')}">
         <input class="proj-tags" placeholder="标签（逗号分隔）" value="${escapeHtml(tags || '')}">
+        <div class="proj-cover-upload">
+            <input type="file" class="proj-cover-input" accept="image/*">
+            <div class="proj-cover-preview">${coverPreviewHtml}</div>
+        </div>
         <input class="proj-color1" placeholder="渐变颜色1（如 #667eea）" value="${escapeHtml(c1 || '#667eea')}">
         <input class="proj-color2" placeholder="渐变颜色2（如 #764ba2）" value="${escapeHtml(c2 || '#764ba2')}">
         <button class="edit-remove-btn" title="删除">×</button>
     `;
     div.querySelector('.edit-remove-btn').addEventListener('click', () => div.remove());
+    // cover upload preview
+    const coverInput = div.querySelector('.proj-cover-input');
+    const coverPreview = div.querySelector('.proj-cover-preview');
+    coverInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            coverPreview.innerHTML = `<img src="${ev.target.result}" alt="">`;
+        };
+        reader.readAsDataURL(file);
+    });
     container.appendChild(div);
 }
 
 document.getElementById('addSkill').addEventListener('click', () => addSkillItem('', ''));
-document.getElementById('addProject').addEventListener('click', () => addProjectItem('', '', '', '', ''));
+document.getElementById('addProject').addEventListener('click', () => addProjectItem('', '', '', '', '', ''));
 
 /* ---- 头像上传 ---- */
 document.getElementById('editAvatar').addEventListener('change', function (e) {
@@ -609,7 +635,9 @@ editSave.addEventListener('click', () => {
         const tags = item.querySelector('.proj-tags').value.split(',').map(s => s.trim()).filter(Boolean);
         const color1 = item.querySelector('.proj-color1').value.trim() || '#667eea';
         const color2 = item.querySelector('.proj-color2').value.trim() || '#764ba2';
-        if (title) data.projects.push({ title, desc, tags, color1, color2 });
+        const coverImg = item.querySelector('.proj-cover-preview img');
+        const cover = coverImg ? coverImg.src : '';
+        if (title) data.projects.push({ title, desc, tags, color1, color2, cover });
     });
 
     currentData = data;
