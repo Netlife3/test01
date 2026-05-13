@@ -6,6 +6,43 @@
 const STORAGE_KEY = 'personal_site_data';
 const PASSWORD_KEY = 'personal_site_pwd';
 const DEFAULT_PASSWORD = 'admin123';
+const CLOUD_SYNC_KEY = 'personal_site_cloud';
+
+function getCloudApiUrl() {
+    return window.location.origin + '/api/data';
+}
+
+function isCloudSyncEnabled() {
+    return localStorage.getItem(CLOUD_SYNC_KEY) === 'true';
+}
+
+async function loadFromCloud() {
+    try {
+        const res = await fetch(getCloudApiUrl());
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && typeof data === 'object') {
+            // cache to localStorage
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            return data;
+        }
+    } catch (e) {
+        // ignore — fall back to localStorage
+    }
+    return null;
+}
+
+async function saveToCloud(data) {
+    try {
+        await fetch(getCloudApiUrl(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+    } catch (e) {
+        // silent fail — data is still saved locally
+    }
+}
 
 const DEFAULT_DATA = {
     name: 'John Doe',
@@ -42,12 +79,19 @@ const DEFAULT_DATA = {
     }
 };
 
-function loadData() {
+async function loadData() {
+    // if cloud sync enabled, try loading from cloud first
+    if (isCloudSyncEnabled()) {
+        const cloudData = await loadFromCloud();
+        if (cloudData) {
+            return deepMerge(cloneData(DEFAULT_DATA), cloudData);
+        }
+    }
+    // fall back to localStorage
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
             const parsed = JSON.parse(raw);
-            // deep merge with defaults so new fields get filled in
             return deepMerge(cloneData(DEFAULT_DATA), parsed);
         }
     } catch (e) {
@@ -58,6 +102,9 @@ function loadData() {
 
 function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (isCloudSyncEnabled()) {
+        saveToCloud(data);
+    }
 }
 
 function cloneData(obj) {
@@ -86,7 +133,7 @@ function deepMerge(target, source) {
 /* ============================================================
    页面渲染
    ============================================================ */
-let currentData = loadData();
+let currentData = null;
 
 function renderAll() {
     document.title = currentData.name + (currentData.siteSuffix ? ' | ' + currentData.siteSuffix : '');
@@ -567,6 +614,10 @@ function populateForm() {
     const projContainer = document.getElementById('editProjectsContainer');
     projContainer.innerHTML = '';
     d.projects.forEach(p => addProjectItem(p.title, p.desc, p.tags.join(', '), p.color1, p.color2, p.cover || ''));
+
+    // cloud sync
+    document.getElementById('editCloudSync').checked = isCloudSyncEnabled();
+    updateCloudSyncStatus();
 }
 
 /* ---- 动态添加技能/项目 ---- */
@@ -704,6 +755,9 @@ editReset.addEventListener('click', () => {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(PASSWORD_KEY);
         currentData = cloneData(DEFAULT_DATA);
+        if (isCloudSyncEnabled()) {
+            saveToCloud(currentData);
+        }
         renderAll();
         populateForm();
     }
@@ -741,6 +795,9 @@ document.getElementById('importFileInput').addEventListener('change', function (
             }
             currentData = deepMerge(cloneData(DEFAULT_DATA), imported);
             saveData(currentData);
+            if (isCloudSyncEnabled()) {
+                saveToCloud(currentData);
+            }
             renderAll();
             populateForm();
             showToast('数据导入成功');
@@ -751,6 +808,26 @@ document.getElementById('importFileInput').addEventListener('change', function (
     reader.readAsText(file);
     // reset so same file can be imported again
     this.value = '';
+});
+
+/* ---- 云端同步 ---- */
+function updateCloudSyncStatus() {
+    const enabled = isCloudSyncEnabled();
+    document.getElementById('cloudSyncStatus').textContent = enabled ? '已开启' : '已关闭';
+}
+
+document.getElementById('editCloudSync').addEventListener('change', function () {
+    if (this.checked) {
+        localStorage.setItem(CLOUD_SYNC_KEY, 'true');
+        updateCloudSyncStatus();
+        // immediately push current data to cloud
+        saveToCloud(currentData);
+        showToast('云端同步已开启，数据已上传');
+    } else {
+        localStorage.setItem(CLOUD_SYNC_KEY, 'false');
+        updateCloudSyncStatus();
+        showToast('云端同步已关闭');
+    }
 });
 
 /* ============================================================
@@ -875,4 +952,10 @@ document.getElementById('importFileInput').addEventListener('change', function (
 /* ============================================================
    初始化
    ============================================================ */
-renderAll();
+(async function init() {
+    currentData = await loadData();
+    renderAll();
+    // restore cloud sync toggle state
+    document.getElementById('editCloudSync').checked = isCloudSyncEnabled();
+    updateCloudSyncStatus();
+})();
