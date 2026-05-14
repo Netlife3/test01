@@ -76,7 +76,12 @@ const DEFAULT_DATA = {
         weibo: '',
         zhihu: '',
         twitter: ''
-    }
+    },
+    timeline: [
+        { period: '2023 - 至今', title: '高级全栈开发者', company: '某科技公司', desc: '负责核心产品架构设计与开发，带领团队完成技术升级。' },
+        { period: '2021 - 2023', title: '全栈开发者', company: '某互联网公司', desc: '参与多个产品从0到1开发，主导前端架构重构。' },
+        { period: '2019 - 2021', title: '初级开发者', company: '某创业公司', desc: '负责Web应用开发与维护，积累全栈开发经验。' }
+    ]
 };
 
 async function loadData() {
@@ -102,6 +107,9 @@ async function loadData() {
 
 function saveData(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const ts = Date.now();
+    localStorage.setItem('last_updated', ts);
+    document.getElementById('lastUpdated').textContent = '更新: ' + new Date(ts).toLocaleDateString('zh-CN');
     if (isCloudSyncEnabled()) {
         saveToCloud(data);
     }
@@ -142,10 +150,12 @@ function renderAll() {
     renderHero();
     renderAbout();
     renderSkills();
+    renderTimeline();
     renderProjects();
     renderContact();
     reobserveReveal();
     reobserveStats();
+    reobserveTimeline();
 }
 
 function renderLogo() {
@@ -302,6 +312,47 @@ function renderSkills() {
         `;
         grid.appendChild(card);
     });
+}
+
+/* ============================================================
+   时间线渲染
+   ============================================================ */
+function renderTimeline() {
+    const container = document.getElementById('timelineContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    currentData.timeline.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'timeline-item';
+        div.style.transitionDelay = (index * 0.1) + 's';
+        div.innerHTML = `
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+                <span class="timeline-period">${escapeHtml(item.period)}</span>
+                <h3>${escapeHtml(item.title)}</h3>
+                <div class="timeline-company">${escapeHtml(item.company)}</div>
+                <p>${escapeHtml(item.desc)}</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+let timelineObserver = null;
+
+function reobserveTimeline() {
+    if (timelineObserver) timelineObserver.disconnect();
+    timelineObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        },
+        { threshold: 0.15 }
+    );
+    document.querySelectorAll('.timeline-item').forEach(el => timelineObserver.observe(el));
 }
 
 function renderProjects() {
@@ -686,9 +737,29 @@ function populateForm() {
     // cloud sync
     document.getElementById('editCloudSync').checked = isCloudSyncEnabled();
     updateCloudSyncStatus();
+
+    // timeline
+    const tlContainer = document.getElementById('editTimelineContainer');
+    tlContainer.innerHTML = '';
+    d.timeline.forEach(t => addTimelineItem(t.period, t.title, t.company, t.desc));
 }
 
 /* ---- 动态添加技能/项目 ---- */
+function addTimelineItem(period, title, company, desc) {
+    const container = document.getElementById('editTimelineContainer');
+    const div = document.createElement('div');
+    div.className = 'edit-timeline-item';
+    div.innerHTML = `
+        <input class="tl-period" placeholder="时间段（如：2023 - 至今）" value="${escapeHtml(period || '')}">
+        <input class="tl-title" placeholder="职位（如：高级全栈开发者）" value="${escapeHtml(title || '')}">
+        <input class="tl-company" placeholder="公司名称" value="${escapeHtml(company || '')}">
+        <input class="tl-desc" placeholder="简要描述" value="${escapeHtml(desc || '')}">
+        <button class="edit-remove-btn" title="删除">×</button>
+    `;
+    div.querySelector('.edit-remove-btn').addEventListener('click', () => div.remove());
+    container.appendChild(div);
+}
+
 function addSkillItem(name, tags) {
     const container = document.getElementById('editSkillsContainer');
     const div = document.createElement('div');
@@ -739,6 +810,7 @@ function addProjectItem(title, desc, tags, c1, c2, cover) {
 
 document.getElementById('addSkill').addEventListener('click', () => addSkillItem('', ''));
 document.getElementById('addProject').addEventListener('click', () => addProjectItem('', '', '', '', '', ''));
+document.getElementById('addTimeline').addEventListener('click', () => addTimelineItem('', '', '', ''));
 
 /* ---- 头像上传 ---- */
 document.getElementById('editAvatar').addEventListener('change', function (e) {
@@ -785,7 +857,8 @@ editSave.addEventListener('click', () => {
             weibo: document.getElementById('editSocialWeibo').value.trim(),
             zhihu: document.getElementById('editSocialZhihu').value.trim(),
             twitter: document.getElementById('editSocialTwitter').value.trim()
-        }
+        },
+        timeline: []
     };
 
     document.querySelectorAll('#editSkillsContainer .edit-skill-item').forEach(item => {
@@ -803,6 +876,14 @@ editSave.addEventListener('click', () => {
         const coverImg = item.querySelector('.proj-cover-preview img');
         const cover = coverImg ? coverImg.src : '';
         if (title) data.projects.push({ title, desc, tags, color1, color2, cover });
+    });
+
+    document.querySelectorAll('#editTimelineContainer .edit-timeline-item').forEach(item => {
+        const period = item.querySelector('.tl-period').value.trim();
+        const title = item.querySelector('.tl-title').value.trim();
+        const company = item.querySelector('.tl-company').value.trim();
+        const desc = item.querySelector('.tl-desc').value.trim();
+        if (period && title) data.timeline.push({ period, title, company, desc });
     });
 
     // save password if set
@@ -1018,9 +1099,50 @@ document.getElementById('editCloudSync').addEventListener('change', function () 
 })();
 
 /* ============================================================
+   主题切换
+   ============================================================ */
+function initTheme() {
+    const saved = localStorage.getItem('theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    if (saved === 'light' || (!saved && prefersLight)) {
+        document.documentElement.classList.add('light');
+    }
+}
+
+function toggleTheme() {
+    document.documentElement.classList.toggle('light');
+    const isLight = document.documentElement.classList.contains('light');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+/* ============================================================
+   访问量与最后更新
+   ============================================================ */
+function updateVisitCount() {
+    const key = 'site_visits';
+    let count = parseInt(localStorage.getItem(key) || '0');
+    count++;
+    localStorage.setItem(key, count);
+    document.getElementById('visitCount').textContent = '访问: ' + count;
+}
+
+function updateLastUpdated() {
+    const ts = localStorage.getItem('last_updated');
+    if (ts) {
+        const d = new Date(parseInt(ts));
+        document.getElementById('lastUpdated').textContent = '更新: ' + d.toLocaleDateString('zh-CN');
+    }
+}
+
+/* ============================================================
    初始化
    ============================================================ */
 (async function init() {
+    initTheme();
+    updateVisitCount();
+    updateLastUpdated();
     currentData = await loadData();
     renderAll();
     // restore cloud sync toggle state

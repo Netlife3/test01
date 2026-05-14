@@ -18,9 +18,13 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="#about" class="nav-link">关于</a></li>
                 <li><a href="#skills" class="nav-link">技能</a></li>
+                <li><a href="#timeline" class="nav-link">经历</a></li>
                 <li><a href="#projects" class="nav-link">项目</a></li>
                 <li><a href="#contact" class="nav-link">联系</a></li>
             </ul>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm0-2c2.76 0 5-2.24 5-5s-2.24-5-5-5v10z"/></svg>
+            </button>
             <button class="hamburger" id="hamburger" aria-label="菜单">
                 <span></span><span></span><span></span>
             </button>
@@ -144,6 +148,17 @@
         </div>
     </section>
 
+    <!-- 工作经历 -->
+    <section id="timeline" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title reveal">工作经历</h2>
+            <p class="section-subtitle reveal">Experience</p>
+            <div class="timeline" id="timelineContainer">
+                <!-- JS 渲染 -->
+            </div>
+        </div>
+    </section>
+
     <!-- 项目 -->
     <section id="projects" class="section">
         <div class="container">
@@ -220,7 +235,11 @@
     <!-- 页脚 -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 <span id="footerName">John Doe</span>. Made with <span class="heart">♥</span> by individuality.</p>
+            <p class="footer-main">&copy; 2026 <span id="footerName">John Doe</span>. Made with <span class="heart">♥</span> by individuality.</p>
+            <div class="footer-meta">
+                <span id="visitCount">访问: --</span>
+                <span id="lastUpdated">更新: --</span>
+            </div>
         </div>
     </footer>
 
@@ -339,6 +358,21 @@
                     </div>
                 </div>
                 <button class="edit-add-btn" id="addSkill">+ 添加技能组</button>
+            </section>
+
+            <!-- Timeline -->
+            <section class="edit-section">
+                <h4>💼 工作经历</h4>
+                <div id="editTimelineContainer">
+                    <div class="edit-timeline-item">
+                        <input class="tl-period" placeholder="时间段（如：2023 - 至今）">
+                        <input class="tl-title" placeholder="职位（如：高级全栈开发者）">
+                        <input class="tl-company" placeholder="公司名称">
+                        <input class="tl-desc" placeholder="简要描述">
+                        <button class="edit-remove-btn" title="删除">×</button>
+                    </div>
+                </div>
+                <button class="edit-add-btn" id="addTimeline">+ 添加经历</button>
             </section>
 
             <!-- Projects -->
