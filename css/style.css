@@ -44,7 +44,45 @@
 
 :root.light .btn-outline:hover {
     border-color: var(--accent);
-    color: var(--accent-light);
+    color: var(--accent);
+    background: rgba(108, 92, 231, 0.06);
+}
+
+:root.light .skill-card:hover {
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 20px 60px rgba(108, 92, 231, 0.1);
+}
+
+:root.light .project-card:hover {
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 20px 60px rgba(108, 92, 231, 0.1);
+}
+
+:root.light .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+:root.light .hero-social a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+:root.light .social-btn:hover {
+    color: var(--accent);
+    border-color: rgba(108, 92, 231, 0.3);
+}
+
+:root.light .game-trigger:hover {
+    color: var(--accent);
+}
+
+:root.light .timeline-card:hover {
+    border-color: rgba(108, 92, 231, 0.3);
+}
+
+:root.light .nav-link:hover {
+    color: var(--accent);
 }
 
 :root.light .photo-placeholder svg,
