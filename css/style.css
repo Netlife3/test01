@@ -61,11 +61,6 @@
     border-color: rgba(108, 92, 231, 0.25);
 }
 
-:root.light .theme-toggle:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-}
-
 :root.light .hero-social a:hover {
     color: var(--accent);
     border-color: var(--accent);
@@ -225,34 +220,6 @@ ul { list-style: none; }
 
 .nav-link:hover::after {
     width: 100%;
-}
-
-/* 主题切换按钮 */
-.theme-toggle {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    transition: var(--transition);
-    backdrop-filter: blur(8px);
-    flex-shrink: 0;
-}
-
-.theme-toggle:hover {
-    color: var(--accent-light);
-    border-color: var(--accent);
-    transform: rotate(15deg);
-}
-
-.theme-toggle svg {
-    width: 18px;
-    height: 18px;
 }
 
 /* 汉堡菜单 */

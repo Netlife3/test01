@@ -1134,25 +1134,6 @@ document.getElementById('editCloudSync').addEventListener('change', function () 
 })();
 
 /* ============================================================
-   主题切换
-   ============================================================ */
-function initTheme() {
-    const saved = localStorage.getItem('theme');
-    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    if (saved === 'light' || (!saved && prefersLight)) {
-        document.documentElement.classList.add('light');
-    }
-}
-
-function toggleTheme() {
-    document.documentElement.classList.toggle('light');
-    const isLight = document.documentElement.classList.contains('light');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-}
-
-document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-
-/* ============================================================
    访问量与最后更新
    ============================================================ */
 function updateVisitCount() {
@@ -1456,7 +1437,6 @@ function updateLastUpdated() {
    初始化
    ============================================================ */
 (async function init() {
-    initTheme();
     updateVisitCount();
     updateLastUpdated();
     currentData = await loadData();
