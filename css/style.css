@@ -49,9 +49,9 @@
 }
 
 :root.light .skill-card:hover {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 20px 60px rgba(108, 92, 231, 0.12);
-    border-color: rgba(108, 92, 231, 0.25);
+    background: var(--card-bg);
+    box-shadow: 0 0 24px rgba(108, 92, 231, 0.2);
+    border-color: rgba(108, 92, 231, 0.35);
 }
 
 :root.light .project-card:hover {
