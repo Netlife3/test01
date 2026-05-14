@@ -617,8 +617,7 @@ function setActiveNav() {
         }
     });
     navLinkEls.forEach(link => {
-        link.style.color = link.getAttribute('href') === '#' + current
-            ? 'var(--text-primary)' : '';
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
 }
 window.addEventListener('scroll', setActiveNav);
@@ -798,7 +797,7 @@ function addProjectItem(title, desc, tags, c1, c2, cover) {
     const coverPreview = div.querySelector('.proj-cover-preview');
     coverInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
-        if (!file) return;
+        if (!file || !checkImageSize(file)) return;
         const reader = new FileReader();
         reader.onload = function (ev) {
             coverPreview.innerHTML = `<img src="${ev.target.result}" alt="">`;
@@ -812,10 +811,21 @@ document.getElementById('addSkill').addEventListener('click', () => addSkillItem
 document.getElementById('addProject').addEventListener('click', () => addProjectItem('', '', '', '', '', ''));
 document.getElementById('addTimeline').addEventListener('click', () => addTimelineItem('', '', '', ''));
 
+const MAX_IMAGE_SIZE = 500 * 1024; // 500KB
+
+function checkImageSize(file) {
+    if (file.size > MAX_IMAGE_SIZE) {
+        const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+        showToast(`图片过大 (${sizeMB}MB)，建议压缩后上传`);
+        return false;
+    }
+    return true;
+}
+
 /* ---- 头像上传 ---- */
 document.getElementById('editAvatar').addEventListener('change', function (e) {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !checkImageSize(file)) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
         const preview = document.getElementById('avatarPreview');
@@ -827,7 +837,7 @@ document.getElementById('editAvatar').addEventListener('change', function (e) {
 /* ---- 关于照片上传 ---- */
 document.getElementById('editAboutPhoto').addEventListener('change', function (e) {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !checkImageSize(file)) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
         const preview = document.getElementById('aboutPhotoPreview');
@@ -960,12 +970,37 @@ document.getElementById('importFileInput').addEventListener('change', function (
 });
 
 /* ---- 云端同步 ---- */
+let _cloudApiAvailable = true;
+
+async function checkCloudApi() {
+    try {
+        const res = await fetch(getCloudApiUrl(), { method: 'HEAD' });
+        _cloudApiAvailable = res.ok;
+    } catch (e) {
+        _cloudApiAvailable = false;
+    }
+    if (!_cloudApiAvailable) {
+        document.getElementById('editCloudSync').disabled = true;
+        document.getElementById('cloudSyncStatus').textContent = '不可用（需后端 API）';
+    }
+}
+
 function updateCloudSyncStatus() {
     const enabled = isCloudSyncEnabled();
-    document.getElementById('cloudSyncStatus').textContent = enabled ? '已开启' : '已关闭';
+    const el = document.getElementById('cloudSyncStatus');
+    if (!_cloudApiAvailable) {
+        el.textContent = '不可用（需后端 API）';
+        return;
+    }
+    el.textContent = enabled ? '已开启' : '已关闭';
 }
 
 document.getElementById('editCloudSync').addEventListener('change', function () {
+    if (!_cloudApiAvailable) {
+        this.checked = false;
+        showToast('云端同步不可用：需要部署后端 API');
+        return;
+    }
     if (this.checked) {
         localStorage.setItem(CLOUD_SYNC_KEY, 'true');
         updateCloudSyncStatus();
@@ -1429,4 +1464,5 @@ function updateLastUpdated() {
     // restore cloud sync toggle state
     document.getElementById('editCloudSync').checked = isCloudSyncEnabled();
     updateCloudSyncStatus();
+    checkCloudApi();
 })();
