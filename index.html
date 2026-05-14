@@ -239,6 +239,7 @@
             <div class="footer-meta">
                 <span id="visitCount">访问: --</span>
                 <span id="lastUpdated">更新: --</span>
+                <span class="game-trigger" id="gameTrigger">🎮 2048</span>
             </div>
         </div>
     </footer>
@@ -433,6 +434,48 @@
         </div>
     </div>
     <div class="edit-overlay" id="editOverlay"></div>
+
+    <!-- ======== 2048 游戏弹窗 ======== -->
+    <div class="game-overlay" id="gameOverlay">
+        <div class="game-modal">
+            <div class="game-header">
+                <div class="game-title-row">
+                    <h3>2048</h3>
+                    <div class="game-scores">
+                        <div class="game-score-box">
+                            <span class="game-score-label">分数</span>
+                            <span class="game-score-value" id="gameScore">0</span>
+                        </div>
+                        <div class="game-score-box">
+                            <span class="game-score-label">最高</span>
+                            <span class="game-score-value" id="gameBest">0</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="game-close" id="gameClose">&times;</button>
+            </div>
+            <div class="game-body">
+                <div class="game-grid" id="gameGrid">
+                    <div class="grid-bg" id="gridBg">
+                        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                        <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-tiles" id="gridTiles"></div>
+                    <div class="game-message" id="gameMessage" style="display:none">
+                        <div class="game-message-text" id="gameMessageText"></div>
+                        <button class="btn btn-primary" id="gameContinue">继续</button>
+                    </div>
+                </div>
+                <div class="game-footer-actions">
+                    <button class="btn btn-primary" id="gameNewBtn">新游戏</button>
+                    <button class="btn btn-outline" id="gameCloseBtn">关闭</button>
+                </div>
+                <p class="game-hint">方向键 ← ↑ → ↓ 或滑动操作</p>
+            </div>
+        </div>
+    </div>
 
     </div>
 

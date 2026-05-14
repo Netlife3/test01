@@ -1137,6 +1137,287 @@ function updateLastUpdated() {
 }
 
 /* ============================================================
+   2048 游戏
+   ============================================================ */
+(function() {
+    const SIZE = 4;
+    let grid, score, over, won, keepPlaying;
+    let touchStartX, touchStartY;
+
+    const $ = id => document.getElementById(id);
+    const tilesEl = $('gridTiles');
+    const scoreEl = $('gameScore');
+    const bestEl = $('gameBest');
+    const msgEl = $('gameMessage');
+    const msgTextEl = $('gameMessageText');
+    const overlay = $('gameOverlay');
+
+    const COLORS = {
+        2:    { bg: '#f0e6ff', text: '#5a4bd1' },
+        4:    { bg: '#e0ccff', text: '#5a4bd1' },
+        8:    { bg: '#c9a8ff', text: '#ffffff' },
+        16:   { bg: '#b080ff', text: '#ffffff' },
+        32:   { bg: '#9c5cff', text: '#ffffff' },
+        64:   { bg: '#8538ff', text: '#ffffff' },
+        128:  { bg: '#6c1ad9', text: '#ffffff' },
+        256:  { bg: '#a29bfe', text: '#ffffff' },
+        512:  { bg: '#7c6cf0', text: '#ffffff' },
+        1024: { bg: '#6c5ce7', text: '#ffffff' },
+        2048: { bg: '#ffd700', text: '#5a4bd1' },
+        4096: { bg: '#ff6b6b', text: '#ffffff' },
+    };
+
+    function getLayout() {
+        const w = tilesEl.offsetWidth || 320;
+        const gap = 6;
+        return { cellSize: (w - gap * (SIZE - 1)) / SIZE, gap };
+    }
+
+    function getColor(val) {
+        return COLORS[val] || { bg: '#1a0d5e', text: '#ffffff' };
+    }
+
+    function clone(g) { return g.map(r => [...r]); }
+
+    function init() {
+        grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+        score = 0;
+        over = false;
+        won = false;
+        keepPlaying = false;
+        addRandomTile();
+        addRandomTile();
+        updateScore();
+        hideMessage();
+        render(null);
+    }
+
+    function addRandomTile() {
+        const empty = [];
+        for (let r = 0; r < SIZE; r++)
+            for (let c = 0; c < SIZE; c++)
+                if (grid[r][c] === 0) empty.push({ r, c });
+        if (empty.length === 0) return null;
+        const { r, c } = empty[Math.floor(Math.random() * empty.length)];
+        grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+        return r + ',' + c;
+    }
+
+    function slideRow(row) {
+        let arr = row.filter(v => v !== 0);
+        let merged = Array(arr.length).fill(false);
+        let gain = 0;
+        for (let i = 0; i < arr.length - 1; i++) {
+            if (arr[i] === arr[i + 1]) {
+                arr[i] *= 2;
+                gain += arr[i];
+                merged[i] = true;
+                arr[i + 1] = 0;
+            }
+        }
+        arr = arr.filter(v => v !== 0);
+        while (arr.length < SIZE) arr.push(0);
+        return { arr, gain };
+    }
+
+    function moveLeft() {
+        let moved = false;
+        let gain = 0;
+        for (let r = 0; r < SIZE; r++) {
+            const orig = [...grid[r]];
+            const result = slideRow(grid[r]);
+            grid[r] = result.arr;
+            gain += result.gain;
+            if (orig.join(',') !== grid[r].join(',')) moved = true;
+        }
+        return { moved, gain };
+    }
+
+    function moveRight() {
+        let moved = false;
+        let gain = 0;
+        for (let r = 0; r < SIZE; r++) {
+            const orig = [...grid[r]];
+            grid[r].reverse();
+            const result = slideRow(grid[r]);
+            grid[r] = result.arr;
+            grid[r].reverse();
+            gain += result.gain;
+            if (orig.join(',') !== grid[r].join(',')) moved = true;
+        }
+        return { moved, gain };
+    }
+
+    function moveUp() {
+        let moved = false;
+        let gain = 0;
+        for (let c = 0; c < SIZE; c++) {
+            const col = grid.map(r => r[c]);
+            const orig = [...col];
+            const result = slideRow(col);
+            gain += result.gain;
+            for (let r = 0; r < SIZE; r++) grid[r][c] = result.arr[r];
+            if (orig.join(',') !== col.join(',')) moved = true;
+        }
+        return { moved, gain };
+    }
+
+    function moveDown() {
+        let moved = false;
+        let gain = 0;
+        for (let c = 0; c < SIZE; c++) {
+            let col = grid.map(r => r[c]);
+            const orig = [...col];
+            col.reverse();
+            const result = slideRow(col);
+            col = result.arr;
+            col.reverse();
+            gain += result.gain;
+            for (let r = 0; r < SIZE; r++) grid[r][c] = col[r];
+            if (orig.join(',') !== col.join(',')) moved = true;
+        }
+        return { moved, gain };
+    }
+
+    function move(dir) {
+        if (over || (won && !keepPlaying)) return;
+        const fns = { left: moveLeft, right: moveRight, up: moveUp, down: moveDown };
+        const { moved, gain } = fns[dir]();
+        if (!moved) return;
+        score += gain;
+        updateScore();
+        const newPos = addRandomTile();
+        render(newPos);
+        if (checkWin()) return;
+        if (checkOver()) showMessage('游戏结束', false);
+    }
+
+    function checkWin() {
+        if (won) return false;
+        for (let r = 0; r < SIZE; r++)
+            for (let c = 0; c < SIZE; c++)
+                if (grid[r][c] === 2048) {
+                    won = true;
+                    showMessage('你赢了！', true);
+                    return true;
+                }
+        return false;
+    }
+
+    function checkOver() {
+        for (let r = 0; r < SIZE; r++)
+            for (let c = 0; c < SIZE; c++) {
+                if (grid[r][c] === 0) return false;
+                if (c + 1 < SIZE && grid[r][c] === grid[r][c + 1]) return false;
+                if (r + 1 < SIZE && grid[r][c] === grid[r + 1][c]) return false;
+            }
+        over = true;
+        return true;
+    }
+
+    function render(newTilePos) {
+        tilesEl.innerHTML = '';
+        const { cellSize, gap } = getLayout();
+        for (let r = 0; r < SIZE; r++) {
+            for (let c = 0; c < SIZE; c++) {
+                const val = grid[r][c];
+                if (val === 0) continue;
+                const colors = getColor(val);
+                const tile = document.createElement('div');
+                tile.className = 'game-tile';
+                tile.textContent = val;
+                const fontSize = val >= 1000 ? Math.floor(cellSize * 0.3)
+                    : val >= 100 ? Math.floor(cellSize * 0.36)
+                    : Math.floor(cellSize * 0.46);
+                tile.style.cssText = [
+                    `width:${cellSize}px`, `height:${cellSize}px`,
+                    `left:${c * (cellSize + gap)}px`, `top:${r * (cellSize + gap)}px`,
+                    `background:${colors.bg}`, `color:${colors.text}`,
+                    `font-size:${fontSize}px`,
+                    `border-radius:6px`
+                ].join(';');
+                if (newTilePos === r + ',' + c) tile.classList.add('pop');
+                tilesEl.appendChild(tile);
+            }
+        }
+    }
+
+    function updateScore() {
+        scoreEl.textContent = score;
+        if (score > parseInt(localStorage.getItem('game_best') || '0')) {
+            localStorage.setItem('game_best', score);
+        }
+        bestEl.textContent = localStorage.getItem('game_best') || '0';
+    }
+
+    function showMessage(text, isWin) {
+        msgEl.style.display = 'flex';
+        msgTextEl.textContent = text;
+        msgTextEl.style.color = isWin ? '#ffd700' : 'var(--text-primary)';
+    }
+
+    function hideMessage() { msgEl.style.display = 'none'; }
+
+    // Keyboard
+    document.addEventListener('keydown', function(e) {
+        if (!overlay.classList.contains('active')) return;
+        const map = {
+            ArrowLeft: 'left', ArrowRight: 'right',
+            ArrowUp: 'up', ArrowDown: 'down'
+        };
+        const dir = map[e.key];
+        if (dir) { e.preventDefault(); move(dir); }
+    });
+
+    // Touch swipe
+    tilesEl.addEventListener('touchstart', function(e) {
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+    }, { passive: true });
+
+    tilesEl.addEventListener('touchend', function(e) {
+        if (!touchStartX) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        const absDx = Math.abs(dx), absDy = Math.abs(dy);
+        if (Math.max(absDx, absDy) < 20) return;
+        if (absDx > absDy) move(dx > 0 ? 'right' : 'left');
+        else move(dy > 0 ? 'down' : 'up');
+        touchStartX = touchStartY = null;
+    }, { passive: true });
+
+    // Continue button after win
+    $('gameContinue').addEventListener('click', function() {
+        keepPlaying = true;
+        hideMessage();
+    });
+
+    // Open / close
+    $('gameTrigger').addEventListener('click', function() {
+        overlay.classList.add('active');
+        init();
+        document.body.style.overflow = 'hidden';
+    });
+
+    function closeGame() {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    $('gameClose').addEventListener('click', closeGame);
+    $('gameCloseBtn').addEventListener('click', closeGame);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeGame();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) closeGame();
+    });
+
+    $('gameNewBtn').addEventListener('click', init);
+})();
+
+/* ============================================================
    初始化
    ============================================================ */
 (async function init() {
