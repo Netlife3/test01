@@ -1858,7 +1858,11 @@ ul { list-style: none; }
 /* ==================== 响应式 ==================== */
 @media (max-width: 968px) {
     .hero {
-        padding: 120px 0 60px;
+        padding: 120px 0 100px;
+    }
+
+    .scroll-hint {
+        bottom: 32px;
     }
 
     .hero .container {
