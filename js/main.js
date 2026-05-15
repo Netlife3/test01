@@ -85,12 +85,12 @@ const DEFAULT_DATA = {
 };
 
 async function loadData() {
-    // if cloud sync enabled, try loading from cloud first
-    if (isCloudSyncEnabled()) {
-        const cloudData = await loadFromCloud();
-        if (cloudData) {
-            return deepMerge(cloneData(DEFAULT_DATA), cloudData);
-        }
+    // 始终优先从云端加载（跨设备同步），云端无数据时回退 localStorage
+    const cloudData = await loadFromCloud();
+    if (cloudData) {
+        // 同时更新本地缓存，加速下次加载
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+        return deepMerge(cloneData(DEFAULT_DATA), cloudData);
     }
     // fall back to localStorage
     try {
