@@ -1472,15 +1472,18 @@ function updateLastUpdated() {
    初始化
    ============================================================ */
 (async function init() {
-    // ?reset 参数：清除本地缓存，从云端重新加载
-    if (window.location.search.includes('reset')) {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(CLOUD_SYNC_KEY);
-        // 去掉参数，避免重复清除
-        const url = new URL(window.location);
-        url.searchParams.delete('reset');
-        window.history.replaceState(null, '', url);
-    }
+    try {
+        // ?reset 参数：清除本地缓存，从云端重新加载
+        if (window.location.search.indexOf('reset') > -1) {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(CLOUD_SYNC_KEY);
+            // 去掉参数，避免重复清除
+            try {
+                var cleanUrl = window.location.href.replace(/[?&]reset\b[^&]*/g, '').replace(/[?&]$/, '').replace(/\?$/, '');
+                window.history.replaceState(null, '', cleanUrl);
+            } catch (_) {}
+        }
+    } catch (_) {}
     updateVisitCount();
     updateLastUpdated();
     currentData = await loadData();
@@ -1489,4 +1492,11 @@ function updateLastUpdated() {
     document.getElementById('editCloudSync').checked = isCloudSyncEnabled();
     updateCloudSyncStatus();
     checkCloudApi();
+    // 页脚版本标记（调试用，部署后可删除）
+    try {
+        var v = document.createElement('span');
+        v.textContent = ' v8';
+        v.style.cssText = 'font-size:0.6rem;opacity:0.3';
+        document.querySelector('.footer-meta').appendChild(v);
+    } catch (_) {}
 })();
