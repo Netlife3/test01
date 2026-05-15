@@ -20,7 +20,7 @@ export async function onRequest(context) {
         'Access-Control-Allow-Headers': 'Content-Type',
     };
 
-    if (request.method === 'OPTIONS') {
+    if (request.method === 'OPTIONS' || request.method === 'HEAD') {
         return new Response(null, { headers: corsHeaders });
     }
 
