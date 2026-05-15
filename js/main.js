@@ -21,7 +21,8 @@ async function loadFromCloud() {
         const res = await fetch(getCloudApiUrl());
         if (!res.ok) return null;
         const data = await res.json();
-        if (data && typeof data === 'object') {
+        // 必须有 name 字段才算有效数据，空对象 {} 会被忽略
+        if (data && typeof data === 'object' && data.name) {
             // cache to localStorage
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             return data;
