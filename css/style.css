@@ -1179,6 +1179,19 @@ ul { list-style: none; }
     opacity: 1;
 }
 
+.pwd-reset {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.pwd-reset:hover {
+    color: var(--accent-light);
+}
+
 .pwd-actions {
     display: flex;
     gap: 12px;

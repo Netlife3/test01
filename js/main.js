@@ -733,6 +733,14 @@ editToggle.addEventListener('click', function () {
     pwdOverlay.classList.add('active');
     setTimeout(() => pwdInput.focus(), 100);
 });
+
+// 忘记密码：重置为 admin123
+document.getElementById('pwdReset').addEventListener('click', function () {
+    localStorage.setItem(PASSWORD_KEY, DEFAULT_PASSWORD);
+    pwdError.classList.remove('show');
+    pwdInput.value = DEFAULT_PASSWORD;
+    showToast('密码已重置为 admin123');
+});
 pwdConfirm.addEventListener('click', handlePwdSubmit);
 pwdCancel.addEventListener('click', closePwdModal);
 pwdOverlay.addEventListener('click', function (e) {
@@ -1531,7 +1539,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v13';
+        v.textContent = ' v14';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}
