@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">John Doe | 个人主页</title>
+    <title id="pageTitle">个人主页</title>
     <script>
-        // 在页面渲染前立即应用保存的主题，防止闪烁
+        // 在页面渲染前立即应用主题 + 标题，防止闪烁
         (function() {
             var theme = localStorage.getItem('site_theme');
             if (theme === 'light') {
                 document.documentElement.classList.add('light');
             }
+            try {
+                var raw = localStorage.getItem('personal_site_data');
+                if (raw) {
+                    var data = JSON.parse(raw);
+                    if (data.name) {
+                        document.title = data.name + (data.siteSuffix ? ' | ' + data.siteSuffix : '');
+                    }
+                }
+            } catch (_) {}
         })();
     </script>
-    <link rel="stylesheet" href="css/style.css?v=8">
+    <link rel="stylesheet" href="css/style.css?v=9">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -489,6 +498,6 @@
 
     </div>
 
-    <script src="js/main.js?v=10"></script>
+    <script src="js/main.js?v=11"></script>
 </body>
 </html>
