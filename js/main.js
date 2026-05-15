@@ -746,6 +746,151 @@ pwdInput.addEventListener('keydown', function (e) {
 editClose.addEventListener('click', closePanel);
 editOverlay.addEventListener('click', closePanel);
 
+/* ---- 忘记密码：邮箱验证码重置 ---- */
+const pwdForgot = document.getElementById('pwdForgot');
+const pwdView = document.getElementById('pwdView');
+const pwdResetView = document.getElementById('pwdResetView');
+const pwdResetEmail = document.getElementById('pwdResetEmail');
+const pwdResetCode = document.getElementById('pwdResetCode');
+const pwdCodeRow = document.getElementById('pwdCodeRow');
+const pwdResetError = document.getElementById('pwdResetError');
+const pwdResetDesc = document.getElementById('pwdResetDesc');
+const pwdResetBtn = document.getElementById('pwdResetBtn');
+const pwdResetBack = document.getElementById('pwdResetBack');
+let pwdResetStep = 0; // 0=输入邮箱, 1=输入验证码, 2=完成
+
+function showResetView() {
+    pwdView.style.display = 'none';
+    pwdResetView.style.display = '';
+    pwdResetEmail.value = '';
+    pwdResetCode.value = '';
+    pwdCodeRow.style.display = 'none';
+    pwdResetError.textContent = '';
+    pwdResetError.classList.remove('show');
+    pwdResetDesc.textContent = '输入你绑定的邮箱，我们将发送验证码';
+    pwdResetBtn.textContent = '发送验证码';
+    pwdResetStep = 0;
+    setTimeout(function () { pwdResetEmail.focus(); }, 100);
+}
+
+function backToPwdView() {
+    pwdView.style.display = '';
+    pwdResetView.style.display = 'none';
+}
+
+pwdForgot.addEventListener('click', showResetView);
+
+pwdResetBack.addEventListener('click', function () {
+    if (pwdResetStep === 1) {
+        // 返回输入邮箱步骤
+        pwdCodeRow.style.display = 'none';
+        pwdResetError.textContent = '';
+        pwdResetError.classList.remove('show');
+        pwdResetDesc.textContent = '输入你绑定的邮箱，我们将发送验证码';
+        pwdResetBtn.textContent = '发送验证码';
+        pwdResetStep = 0;
+        pwdResetCode.value = '';
+        setTimeout(function () { pwdResetEmail.focus(); }, 100);
+    } else {
+        backToPwdView();
+    }
+});
+
+pwdResetBtn.addEventListener('click', function () {
+    if (pwdResetStep === 0) {
+        sendResetCode();
+    } else if (pwdResetStep === 1) {
+        verifyResetCode();
+    }
+});
+
+pwdResetCode.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') verifyResetCode();
+});
+
+async function sendResetCode() {
+    var email = pwdResetEmail.value.trim();
+    if (!email) {
+        showResetError('请输入邮箱地址');
+        return;
+    }
+    pwdResetBtn.disabled = true;
+    pwdResetBtn.textContent = '发送中...';
+    pwdResetError.classList.remove('show');
+    try {
+        var res = await fetch(window.location.origin + '/api/send-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email }),
+        });
+        var data = await res.json();
+        if (res.ok && data.ok) {
+            pwdResetStep = 1;
+            pwdCodeRow.style.display = '';
+            pwdResetDesc.textContent = '验证码已发送到 ' + email + '，5 分钟内有效';
+            pwdResetBtn.textContent = '验证并重置';
+            pwdResetBtn.disabled = false;
+            setTimeout(function () { pwdResetCode.focus(); }, 100);
+        } else {
+            showResetError(data.error || '发送失败，请检查邮箱是否正确');
+            pwdResetBtn.disabled = false;
+            pwdResetBtn.textContent = '发送验证码';
+        }
+    } catch (e) {
+        showResetError('网络错误，请稍后重试');
+        pwdResetBtn.disabled = false;
+        pwdResetBtn.textContent = '发送验证码';
+    }
+}
+
+async function verifyResetCode() {
+    var email = pwdResetEmail.value.trim();
+    var code = pwdResetCode.value.trim();
+    if (!code) {
+        showResetError('请输入验证码');
+        return;
+    }
+    pwdResetBtn.disabled = true;
+    pwdResetBtn.textContent = '验证中...';
+    try {
+        var res = await fetch(window.location.origin + '/api/verify-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, code: code }),
+        });
+        var data = await res.json();
+        if (res.ok && data.ok) {
+            // 密码已重置
+            localStorage.setItem(PASSWORD_KEY, data.password);
+            pwdResetStep = 2;
+            pwdResetDesc.textContent = '密码已重置为 ' + data.password;
+            pwdResetBtn.textContent = '完成';
+            pwdResetBtn.disabled = false;
+            pwdCodeRow.style.display = 'none';
+            pwdResetError.classList.remove('show');
+            // 点完成后返回密码登录
+            pwdResetBtn.onclick = function () {
+                backToPwdView();
+                pwdInput.value = data.password;
+                pwdResetBtn.onclick = null;
+            };
+        } else {
+            showResetError(data.error || '验证码错误');
+            pwdResetBtn.disabled = false;
+            pwdResetBtn.textContent = '验证并重置';
+        }
+    } catch (e) {
+        showResetError('网络错误，请稍后重试');
+        pwdResetBtn.disabled = false;
+        pwdResetBtn.textContent = '验证并重置';
+    }
+}
+
+function showResetError(msg) {
+    pwdResetError.textContent = msg;
+    pwdResetError.classList.add('show');
+}
+
 /* ---- 填充表单 ---- */
 function populateForm() {
     const d = currentData;
@@ -1539,7 +1684,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v15';
+        v.textContent = ' v16';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}

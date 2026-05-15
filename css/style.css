@@ -1190,6 +1190,29 @@ ul { list-style: none; }
     text-align: center;
 }
 
+.pwd-forgot {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.pwd-forgot:hover {
+    color: var(--accent-light);
+}
+
+.pwd-code-row {
+    margin-bottom: 14px;
+}
+
+.pwd-code-row .pwd-input {
+    letter-spacing: 6px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
 /* ==================== 编辑面板 ==================== */
 .edit-toggle {
     position: fixed;
