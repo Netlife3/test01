@@ -584,6 +584,27 @@ function animateNumber(el, target) {
 }
 
 /* ============================================================
+   主题切换
+   ============================================================ */
+const THEME_KEY = 'site_theme';
+const themeToggle = document.getElementById('themeToggle');
+
+function getSavedTheme() {
+    return localStorage.getItem(THEME_KEY) || 'dark';
+}
+
+function applyTheme(theme) {
+    document.documentElement.classList.toggle('light', theme === 'light');
+}
+
+themeToggle.addEventListener('click', function () {
+    const current = getSavedTheme();
+    const next = current === 'light' ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, next);
+    applyTheme(next);
+});
+
+/* ============================================================
    导航
    ============================================================ */
 const navbar = document.getElementById('navbar');
@@ -1063,12 +1084,25 @@ document.getElementById('editCloudSync').addEventListener('change', function () 
         mouse.y = -9999;
     });
 
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let accentRgbCache = '108,92,231';
 
+    function updateAccentCache() {
         const accent = getComputedStyle(document.documentElement)
             .getPropertyValue('--accent').trim() || '#6c5ce7';
-        const accentRgb = hexToRgb(accent);
+        accentRgbCache = hexToRgb(accent);
+    }
+    updateAccentCache();
+
+    // 主题切换时更新粒子颜色缓存
+    const themeToggleBtn = document.getElementById('themeToggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function () {
+            setTimeout(updateAccentCache, 100);
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (let i = 0; i < particles.length; i++) {
             const p = particles[i];
@@ -1099,7 +1133,7 @@ document.getElementById('editCloudSync').addEventListener('change', function () 
             // draw particle
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${accentRgb}, 0.4)`;
+            ctx.fillStyle = `rgba(${accentRgbCache}, 0.4)`;
             ctx.fill();
 
             // connections
@@ -1113,7 +1147,7 @@ document.getElementById('editCloudSync').addEventListener('change', function () 
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = `rgba(${accentRgb}, ${alpha})`;
+                    ctx.strokeStyle = `rgba(${accentRgbCache}, ${alpha})`;
                     ctx.lineWidth = 0.6;
                     ctx.stroke();
                 }

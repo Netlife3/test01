@@ -167,6 +167,8 @@ ul { list-style: none; }
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     padding: 14px 0;
     border-bottom: 1px solid var(--card-border);
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .navbar .container {
@@ -252,6 +254,58 @@ ul { list-style: none; }
 
 .hamburger.active span:nth-child(3) {
     transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ==================== 主题切换按钮 ==================== */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    margin-right: 8px;
+    backdrop-filter: blur(8px);
+}
+
+.theme-toggle:hover {
+    color: var(--accent-light);
+    border-color: var(--accent);
+    transform: scale(1.08);
+}
+
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+/* 深色模式（默认）：显示月亮图标（切换到亮色） */
+.theme-icon-sun {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+}
+
+.theme-icon-moon {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+}
+
+/* 亮色模式：显示太阳图标（切换到深色） */
+:root.light .theme-icon-sun {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+}
+
+:root.light .theme-icon-moon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
 }
 
 /* ==================== Hero 区域 (Apple-Inspired) ==================== */
@@ -408,7 +462,6 @@ ul { list-style: none; }
     justify-content: center;
     color: var(--text-secondary);
     transition: var(--transition);
-    backdrop-filter: blur(8px);
 }
 
 .hero-social a svg {
@@ -546,7 +599,7 @@ ul { list-style: none; }
 }
 
 .section-alt {
-    background: var(--bg-secondary);
+    /* 背景与主背景统一，由 section 间其他视觉元素自然分隔 */
 }
 
 .section-title {
@@ -654,7 +707,6 @@ ul { list-style: none; }
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     overflow: hidden;
-    backdrop-filter: blur(8px);
 }
 
 .photo-placeholder {
@@ -724,11 +776,10 @@ ul { list-style: none; }
 }
 
 .timeline-card {
-    background: var(--card-bg);
+    background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     padding: 24px 28px;
-    backdrop-filter: blur(8px);
     transition: var(--transition);
 }
 
@@ -776,19 +827,18 @@ ul { list-style: none; }
 }
 
 .skill-card {
-    background: var(--card-bg);
+    background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     border-radius: var(--radius);
     padding: 36px 32px;
     transition: var(--transition);
-    backdrop-filter: blur(8px);
 }
 
 .skill-card:hover {
     border-color: rgba(108,92,231,0.3);
     transform: translateY(-6px);
-    box-shadow: 0 20px 60px rgba(108,92,231,0.08);
-    background: rgba(26, 26, 38, 0.75);
+    box-shadow: 0 20px 60px rgba(108,92,231,0.12);
+    background: var(--bg-secondary);
 }
 
 .skill-icon {
@@ -838,19 +888,18 @@ ul { list-style: none; }
 }
 
 .project-card {
-    background: var(--card-bg);
+    background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     border-radius: var(--radius);
     overflow: hidden;
     transition: var(--transition);
-    backdrop-filter: blur(8px);
 }
 
 .project-card:hover {
     border-color: rgba(108,92,231,0.3);
     transform: translateY(-6px);
-    box-shadow: 0 20px 60px rgba(108,92,231,0.08);
-    background: rgba(26, 26, 38, 0.75);
+    box-shadow: 0 20px 60px rgba(108,92,231,0.12);
+    background: var(--bg-secondary);
 }
 
 .project-thumb {
@@ -963,13 +1012,12 @@ ul { list-style: none; }
 .social-btn {
     padding: 12px 28px;
     border-radius: 50px;
-    background: var(--card-bg);
+    background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-secondary);
     transition: var(--transition);
-    backdrop-filter: blur(8px);
     letter-spacing: 0.3px;
 }
 

@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">John Doe | 个人主页</title>
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <script>
+        // 在页面渲染前立即应用保存的主题，防止闪烁
+        (function() {
+            var theme = localStorage.getItem('site_theme');
+            if (theme === 'light') {
+                document.documentElement.classList.add('light');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/style.css?v=6">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -22,6 +31,10 @@
                 <li><a href="#projects" class="nav-link">项目</a></li>
                 <li><a href="#contact" class="nav-link">联系</a></li>
             </ul>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM3 13h2v-2H3v2zm16 0h2v-2h-2v2zm-4 4h2v2h-2v-2zM7 17h2v2H7v-2zm5 4h2v-2h-2v2zm-1-18v2h-2V3h2zm4 1.76L17.24 6 16 7.24 14.76 6 16 4.76zM7.24 6L6 7.24 4.76 6 6 4.76 7.24 6z"/></svg>
+                <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
             <button class="hamburger" id="hamburger" aria-label="菜单">
                 <span></span><span></span><span></span>
             </button>
@@ -476,6 +489,6 @@
 
     </div>
 
-    <script src="js/main.js?v=4"></script>
+    <script src="js/main.js?v=6"></script>
 </body>
 </html>
