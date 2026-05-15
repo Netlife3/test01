@@ -4,7 +4,7 @@
 export async function onRequest(context) {
     const { request, env } = context;
     const kv = env.SITE_DATA_KV;
-    const RESEND_KEY = 're_fNn9YP6h_BiFTWty1WK9jEauCVYLg6PVc';
+    const RESEND_KEY = env.RESEND_KEY || 're_fNn9YP6h_BiFTWty1WK9jEauCVYLg6PVc';
 
     const corsHeaders = {
         'Access-Control-Allow-Origin': '*',
