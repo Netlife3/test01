@@ -1513,6 +1513,8 @@ function updateLastUpdated() {
     updateLastUpdated();
     currentData = await loadData();
     renderAll();
+    // 渲染完成后显示页面，消除默认内容闪烁
+    document.getElementById('page-content').classList.add('ready');
     // restore cloud sync toggle state
     document.getElementById('editCloudSync').checked = isCloudSyncEnabled();
     updateCloudSyncStatus();
@@ -1520,7 +1522,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v9';
+        v.textContent = ' v10';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}
