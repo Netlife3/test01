@@ -21,8 +21,12 @@ async function loadFromCloud() {
         const res = await fetch(getCloudApiUrl());
         if (!res.ok) return null;
         const data = await res.json();
-        // 必须有 name 字段才算有效数据，空对象 {} 会被忽略
+        // 必须有 name 字段才算有效数据
         if (data && typeof data === 'object' && data.name) {
+            // 同步密码到本地
+            if (data._pwd) {
+                localStorage.setItem(PASSWORD_KEY, data._pwd);
+            }
             // cache to localStorage
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             return data;
@@ -35,10 +39,13 @@ async function loadFromCloud() {
 
 async function saveToCloud(data) {
     try {
+        // 附带密码，跨设备同步
+        const payload = JSON.parse(JSON.stringify(data));
+        payload._pwd = localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
         await fetch(getCloudApiUrl(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
     } catch (e) {
         // silent fail — data is still saved locally
@@ -116,15 +123,12 @@ async function loadData() {
 
 async function syncFromCloudInBackground() {
     try {
-        const res = await fetch(getCloudApiUrl());
-        if (!res.ok) return;
-        const cloudData = await res.json();
-        if (!cloudData || !cloudData.name) return;
+        const cloudData = await loadFromCloud();
+        if (!cloudData) return;
         // 比较本地和云端是否一致
         const localRaw = localStorage.getItem(STORAGE_KEY);
         const cloudStr = JSON.stringify(cloudData);
         if (localRaw !== cloudStr) {
-            localStorage.setItem(STORAGE_KEY, cloudStr);
             currentData = deepMerge(cloneData(DEFAULT_DATA), cloudData);
             renderAll();
         }
@@ -712,7 +716,7 @@ function closePwdModal() {
 
 function handlePwdSubmit() {
     const savedPwd = localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
-    const input = pwdInput.value;
+    const input = pwdInput.value.trim();
     if (input === savedPwd) {
         closePwdModal();
         openPanel();
@@ -1527,7 +1531,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v12';
+        v.textContent = ' v13';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}
