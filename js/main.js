@@ -656,13 +656,18 @@ const navLinkEls = document.querySelectorAll('.nav-link');
 
 function setActiveNav() {
     let current = '';
+    const atBottom = window.scrollY + window.innerHeight >= document.body.offsetHeight - 20;
     sections.forEach(section => {
         const top = section.offsetTop - 100;
-        const bottom = top + section.offsetHeight;
-        if (window.scrollY >= top && window.scrollY < bottom) {
+        if (window.scrollY >= top) {
             current = section.getAttribute('id');
         }
     });
+    // 页面滚动到底部时强制激活最后一个板块（联系）
+    if (atBottom) {
+        const last = sections[sections.length - 1];
+        if (last) current = last.getAttribute('id');
+    }
     navLinkEls.forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
@@ -1522,7 +1527,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v11';
+        v.textContent = ' v12';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}
