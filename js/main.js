@@ -85,25 +85,50 @@ const DEFAULT_DATA = {
     ]
 };
 
-async function loadData() {
-    // 始终优先从云端加载（跨设备同步），云端无数据时回退 localStorage
-    const cloudData = await loadFromCloud();
-    if (cloudData) {
-        // 同时更新本地缓存，加速下次加载
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
-        return deepMerge(cloneData(DEFAULT_DATA), cloudData);
-    }
-    // fall back to localStorage
+function loadFromLocal() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
             const parsed = JSON.parse(raw);
-            return deepMerge(cloneData(DEFAULT_DATA), parsed);
+            if (parsed && parsed.name) {
+                return deepMerge(cloneData(DEFAULT_DATA), parsed);
+            }
         }
-    } catch (e) {
-        // ignore corrupt data
+    } catch (e) { /* ignore */ }
+    return null;
+}
+
+async function loadData() {
+    // 先尝试本地缓存（秒开）
+    const local = loadFromLocal();
+    if (local) {
+        // 后台异步拉取云端数据，有更新再刷新
+        syncFromCloudInBackground();
+        return local;
+    }
+    // 无本地缓存：等待云端
+    const cloudData = await loadFromCloud();
+    if (cloudData) {
+        return deepMerge(cloneData(DEFAULT_DATA), cloudData);
     }
     return cloneData(DEFAULT_DATA);
+}
+
+async function syncFromCloudInBackground() {
+    try {
+        const res = await fetch(getCloudApiUrl());
+        if (!res.ok) return;
+        const cloudData = await res.json();
+        if (!cloudData || !cloudData.name) return;
+        // 比较本地和云端是否一致
+        const localRaw = localStorage.getItem(STORAGE_KEY);
+        const cloudStr = JSON.stringify(cloudData);
+        if (localRaw !== cloudStr) {
+            localStorage.setItem(STORAGE_KEY, cloudStr);
+            currentData = deepMerge(cloneData(DEFAULT_DATA), cloudData);
+            renderAll();
+        }
+    } catch (e) { /* silent */ }
 }
 
 function saveData(data) {
@@ -1495,7 +1520,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v8';
+        v.textContent = ' v9';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}
