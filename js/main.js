@@ -1472,6 +1472,15 @@ function updateLastUpdated() {
    初始化
    ============================================================ */
 (async function init() {
+    // ?reset 参数：清除本地缓存，从云端重新加载
+    if (window.location.search.includes('reset')) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CLOUD_SYNC_KEY);
+        // 去掉参数，避免重复清除
+        const url = new URL(window.location);
+        url.searchParams.delete('reset');
+        window.history.replaceState(null, '', url);
+    }
     updateVisitCount();
     updateLastUpdated();
     currentData = await loadData();
