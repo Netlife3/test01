@@ -734,13 +734,6 @@ editToggle.addEventListener('click', function () {
     setTimeout(() => pwdInput.focus(), 100);
 });
 
-// 忘记密码：重置为 admin123
-document.getElementById('pwdReset').addEventListener('click', function () {
-    localStorage.setItem(PASSWORD_KEY, DEFAULT_PASSWORD);
-    pwdError.classList.remove('show');
-    pwdInput.value = DEFAULT_PASSWORD;
-    showToast('密码已重置为 admin123');
-});
 pwdConfirm.addEventListener('click', handlePwdSubmit);
 pwdCancel.addEventListener('click', closePwdModal);
 pwdOverlay.addEventListener('click', function (e) {
@@ -1515,13 +1508,20 @@ function updateLastUpdated() {
    ============================================================ */
 (async function init() {
     try {
+        var search = window.location.search;
         // ?reset 参数：清除本地缓存，从云端重新加载
-        if (window.location.search.indexOf('reset') > -1) {
+        if (search.indexOf('reset') > -1) {
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(CLOUD_SYNC_KEY);
-            // 去掉参数，避免重复清除
+        }
+        // ?resetpwd 参数：重置密码为 admin123（隐藏入口，仅拥有者知晓）
+        if (search.indexOf('resetpwd') > -1) {
+            localStorage.setItem(PASSWORD_KEY, DEFAULT_PASSWORD);
+        }
+        // 去掉参数，避免重复触发
+        if (search.indexOf('reset') > -1 || search.indexOf('resetpwd') > -1) {
             try {
-                var cleanUrl = window.location.href.replace(/[?&]reset\b[^&]*/g, '').replace(/[?&]$/, '').replace(/\?$/, '');
+                var cleanUrl = window.location.href.replace(/[?&](reset|resetpwd)\b[^&]*/g, '').replace(/[?&]$/, '').replace(/\?$/, '');
                 window.history.replaceState(null, '', cleanUrl);
             } catch (_) {}
         }
@@ -1539,7 +1539,7 @@ function updateLastUpdated() {
     // 页脚版本标记（调试用，部署后可删除）
     try {
         var v = document.createElement('span');
-        v.textContent = ' v14';
+        v.textContent = ' v15';
         v.style.cssText = 'font-size:0.6rem;opacity:0.3';
         document.querySelector('.footer-meta').appendChild(v);
     } catch (_) {}
